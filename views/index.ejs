@@ -87,6 +87,30 @@ var sens1Data = <%- JSON.stringify(sensors.sens1Data) %>
 var sens2Data = <%- JSON.stringify(sensors.sens2Data) %>
 var sens3Data = <%- JSON.stringify(sensors.sens3Data) %>
 var sens4Data = <%- JSON.stringify(sensors.sens4Data) %>
+tempData.map(function (v) {
+    v.date = new Date(v.date);
+    return v;
+});
+pressData.map(function (v) {
+    v.date = new Date(v.date);
+    return v;
+});
+sens1Data.map(function (v) {
+    v.date = new Date(v.date);
+    return v;
+});
+sens2Data.map(function (v) {
+    v.date = new Date(v.date);
+    return v;
+});
+sens3Data.map(function (v) {
+    v.date = new Date(v.date);
+    return v;
+});
+sens4Data.map(function (v) {
+    v.date = new Date(v.date);
+    return v;
+});
 
 var tempChart = AmCharts.makeChart("tempdiv", {
     "type": "serial",
