@@ -12,10 +12,14 @@
         <h1 style="text-align: center;">S&Co Monitoring</h1>
         <div style="width:830px;display: inline-block;margin:20px;margin-left:100px;">
             <div class="uk-inline" style="vertical-align:top;">
+                <% if (files['infDev3'].length > 0) { %>
                 <img id="photoviewer3" src="/photos/infDev3/<%= files['infDev3'][0] %>" alt="" style="width:640px;height:480px">
                 <div class="uk-overlay uk-overlay-default uk-position-bottom" style="text-align:center;padding: 0;">
                     ш. Марпосадское&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<span id="photodate3"><%- files['infDev3'][0].substr(0,19).replace('T','&emsp;') %></span></p>
                 </div>
+                <% } else { %>
+                <div style="width:640px;height:480px;">Файлов пока нет</div>
+                <% } %>
             </div>
             <ul class="uk-list uk-list-divider" style="width:180px;height:480px;overflow-y:scroll;display:inline-block;margin:0;">
             <% for(let file of files['infDev3']) { %>
@@ -30,10 +34,16 @@
         </div>
         <div style="width:830px;display: inline-block;">
             <div class="uk-inline" style="vertical-align:top;">
-                <img id="photoviewer2" src="/photos/infDev2/<%= files['infDev2'][0] %>" alt="" style="width:640px;height:480px">
+                <% if (files['infDev2'].length > 0) { %>
+                <img id="photoviewer2" src="/photos/infDev2/<%= files['infDev2'][0] %>" style="width:640px;height:480px">
                 <div class="uk-overlay uk-overlay-default uk-position-bottom" style="text-align:center;padding: 0;">
-                    ул. Ярославская 30/1&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<span id="photodate2"><%- files['infDev2'][0].substr(0,19).replace('T','&emsp;') %></span></p>
+                    ул. Ярославская 30/1&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<span id="photodate2">
+                    <%- files['infDev2'][0].substr(0,19).replace('T','&emsp;') %>
+                    </span></p>
                 </div>
+                <% } else { %>
+                <div style="width:640px;height:480px;">Файлов пока нет</div>
+                <% } %>
             </div>
             <ul class="uk-list uk-list-divider" style="width:180px;height:480px;overflow-y:scroll;display:inline-block;margin:0;">
             <% for(let file of files['infDev2']) { %>
