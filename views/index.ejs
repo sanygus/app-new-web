@@ -1,0 +1,507 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.27/css/uikit.min.css" />
+        <style>
+        </style>
+	</head>
+	<body style="font-family: 'Roboto', sans-serif;">
+        <h1 style="text-align: center;">S&Co Monitoring</h1>
+        <div style="width:830px;display: inline-block;margin:20px;margin-left:100px;">
+            <div class="uk-inline" style="vertical-align:top;">
+                <img id="photoviewer3" src="/photos/infDev3/<%= files['infDev3'][0] %>" alt="" style="width:640px;height:480px">
+                <div class="uk-overlay uk-overlay-default uk-position-bottom" style="text-align:center;padding: 0;">
+                    ш. Марпосадское&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<span id="photodate3"><%- files['infDev3'][0].substr(0,19).replace('T','&emsp;') %></span></p>
+                </div>
+            </div>
+            <ul class="uk-list uk-list-divider" style="width:180px;height:480px;overflow-y:scroll;display:inline-block;margin:0;">
+            <% for(let file of files['infDev3']) { %>
+                <li style="cursor:pointer" onclick="selectphoto('3','/photos/infDev3/<%= file %>');">
+                    <div class="uk-inline">
+                        <img src="/photos/infDev3/<%= file %>" alt="">
+                        <div class="uk-overlay uk-overlay-default uk-position-bottom" style="text-align:center;padding: 0;"><%- file.substr(0,19).replace('T','&emsp;') %></div>
+                    </div>
+                </li>
+            <% } %>
+            </ul>
+        </div>
+        <div style="width:830px;display: inline-block;">
+            <div class="uk-inline" style="vertical-align:top;">
+                <img id="photoviewer2" src="/photos/infDev2/<%= files['infDev2'][0] %>" alt="" style="width:640px;height:480px">
+                <div class="uk-overlay uk-overlay-default uk-position-bottom" style="text-align:center;padding: 0;">
+                    ул. Ярославская 30/1&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<span id="photodate2"><%- files['infDev2'][0].substr(0,19).replace('T','&emsp;') %></span></p>
+                </div>
+            </div>
+            <ul class="uk-list uk-list-divider" style="width:180px;height:480px;overflow-y:scroll;display:inline-block;margin:0;">
+            <% for(let file of files['infDev2']) { %>
+                <li style="cursor:pointer" onclick="selectphoto('2','/photos/infDev2/<%= file %>');">
+                    <div class="uk-inline">
+                        <img src="/photos/infDev2/<%= file %>" alt="" id="prev">
+                        <div class="uk-overlay uk-overlay-default uk-position-bottom" style="text-align:center;padding: 0;"><%- file.substr(0,19).replace('T','&emsp;') %></div>
+                    </div>
+                </li>
+            <% } %>
+            </ul>
+        </div>
+
+        <div>
+            <div id="tempdiv" style="width:48%;height:500px;display:inline-block;"></div>
+            <div id="pressdiv" style="width:48%;height:500px;display:inline-block;"></div>
+        </div>
+        <div>
+            <div id="sens1div" style="width:24%;height:500px;display:inline-block;"></div>
+            <div id="sens2div" style="width:24%;height:500px;display:inline-block;"></div>
+            <div id="sens3div" style="width:24%;height:500px;display:inline-block;"></div>
+            <div id="sens4div" style="width:24%;height:500px;display:inline-block;"></div>
+        </div>
+
+	</body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.27/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.27/js/uikit-icons.min.js"></script>
+    <!-- amCharts -->
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script>
+function selectphoto(viewer,path) {
+    document.getElementById('photoviewer'+viewer).src=path;
+    document.getElementById('photodate'+viewer).innerHTML=path.substr(path.search(/\d\d\d\d-\d\d-\d\dT/),19).replace('T','&emsp;');
+}
+var tempData = <%- JSON.stringify(sensors.tempData) %>
+var pressData = <%- JSON.stringify(sensors.pressData) %>
+var sens1Data = <%- JSON.stringify(sensors.sens1Data) %>
+var sens2Data = <%- JSON.stringify(sensors.sens2Data) %>
+var sens3Data = <%- JSON.stringify(sensors.sens3Data) %>
+var sens4Data = <%- JSON.stringify(sensors.sens4Data) %>
+
+var tempChart = AmCharts.makeChart("tempdiv", {
+    "type": "serial",
+    "theme": "light",
+    "titles":[{"text":"Температура"}],
+    "marginRight": 20,
+    "autoMarginOffset": 20,
+    "marginTop": 5,
+    "dataProvider": tempData,
+    "fontFamily": "Roboto",
+    "valueAxes": [{
+        "axisAlpha": 0.2,
+        "dashLength": 1,
+        "position": "left"
+    }],
+    "legend": {
+        "equalWidths": false,
+        "useGraphSettings": true,
+        "valueAlign": "left",
+        "valueWidth": 120,
+        "valueText": "[[value]] C",
+    },
+    "startDuration": 1,
+    "mouseWheelZoomEnabled": true,
+    "graphs": [{
+        "id": "g3",
+        "balloonText": "[[value]]&#8451;",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "ш. Марпосадское",
+        "valueField": "infDev3",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    },{
+        "id": "g2",
+        "balloonText": "[[value]]&#8451;",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "Ярославкая",
+        "valueField": "infDev2",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    }],
+    "chartScrollbar": {
+        "autoGridCount": true,
+        "graph": "g2",
+        "scrollbarHeight": 40
+    },
+    "dataDateFormat": "YYYY-MM-DD",
+    "chartCursor": {
+        "categoryBalloonDateFormat": "DD MMM - HHч",
+    },
+    "categoryField": "date",
+    "categoryAxis": {
+        "minPeriod": "hh",
+        "parseDates": true,
+        "axisColor": "#DADADA",
+        "dashLength": 1,
+        "minorGridEnabled": true
+    },
+});
+
+//tempChart.addListener("rendered", function(){tempChart.zoomToIndexes(tempData.length - 24, tempData.length - 1);});
+
+var pressChart = AmCharts.makeChart("pressdiv", {
+    "type": "serial",
+    "theme": "light",
+    "titles":[{"text":"Давление"}],
+    "marginRight": 20,
+    "autoMarginOffset": 20,
+    "marginTop": 5,
+    "dataProvider": pressData,
+    "fontFamily": "Roboto",
+    "valueAxes": [{
+        "axisAlpha": 0.2,
+        "dashLength": 1,
+        "position": "left"
+    }],
+    "legend": {
+        "equalWidths": false,
+        "useGraphSettings": true,
+        "valueAlign": "left",
+        "valueWidth": 120,
+        "valueText": "[[value]] мм.рт.ст.",
+    },
+    "startDuration": 1,
+    "mouseWheelZoomEnabled": true,
+    "graphs": [{
+        "id": "g3",
+        "balloonText": "[[value]] мм.рт.ст.",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "ш. Марпосадское",
+        "valueField": "infDev3",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    },{
+        "id": "g2",
+        "balloonText": "[[value]] мм.рт.ст.",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "Ярославкая",
+        "valueField": "infDev2",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    }],
+    "chartScrollbar": {
+        "autoGridCount": true,
+        "graph": "g2",
+        "scrollbarHeight": 40
+    },
+    "dataDateFormat": "YYYY-MM-DD",
+    "chartCursor": {
+        "categoryBalloonDateFormat": "DD MMM - HHч",
+    },
+    "categoryField": "date",
+    "categoryAxis": {
+        "minPeriod": "hh",
+        "parseDates": true,
+        "axisColor": "#DADADA",
+        "dashLength": 1,
+        "minorGridEnabled": true
+    },
+});
+
+var sens1Chart = AmCharts.makeChart("sens1div", {
+    "type": "serial",
+    "theme": "light",
+    "titles":[{"text":"Пропан-бутан"}],
+    "marginRight": 20,
+    "autoMarginOffset": 20,
+    "marginTop": 5,
+    "dataProvider": sens1Data,
+    "fontFamily": "Roboto",
+    "valueAxes": [{
+        "axisAlpha": 0.2,
+        "dashLength": 1,
+        "position": "left"
+    }],
+    "legend": {
+        "equalWidths": false,
+        "useGraphSettings": true,
+        "valueAlign": "left",
+        "valueWidth": 120,
+        "valueText": "[[value]] ppm",
+    },
+    "startDuration": 1,
+    "mouseWheelZoomEnabled": true,
+    "graphs": [{
+        "id": "g3",
+        "balloonText": "[[value]] ppm",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "ш. Марпосадское",
+        "valueField": "infDev3",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    },{
+        "id": "g2",
+        "balloonText": "[[value]] ppm",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "Ярославкая",
+        "valueField": "infDev2",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    }],
+    "chartScrollbar": {
+        "autoGridCount": true,
+        "graph": "g2",
+        "scrollbarHeight": 40
+    },
+    "dataDateFormat": "YYYY-MM-DD",
+    "chartCursor": {
+        "categoryBalloonDateFormat": "DD MMM - HHч",
+    },
+    "categoryField": "date",
+    "categoryAxis": {
+        "minPeriod": "hh",
+        "parseDates": true,
+        "axisColor": "#DADADA",
+        "dashLength": 1,
+        "minorGridEnabled": true
+    },
+});
+var sens2Chart = AmCharts.makeChart("sens2div", {
+    "type": "serial",
+    "theme": "light",
+    "titles":[{"text":"Метан"}],
+    "marginRight": 20,
+    "autoMarginOffset": 20,
+    "marginTop": 5,
+    "dataProvider": sens2Data,
+    "fontFamily": "Roboto",
+    "valueAxes": [{
+        "axisAlpha": 0.2,
+        "dashLength": 1,
+        "position": "left"
+    }],
+    "legend": {
+        "equalWidths": false,
+        "useGraphSettings": true,
+        "valueAlign": "left",
+        "valueWidth": 120,
+        "valueText": "[[value]] ppm",
+    },
+    "startDuration": 1,
+    "mouseWheelZoomEnabled": true,
+    "graphs": [{
+        "id": "g3",
+        "balloonText": "[[value]] ppm",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "ш. Марпосадское",
+        "valueField": "infDev3",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    },{
+        "id": "g2",
+        "balloonText": "[[value]] ppm",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "Ярославкая",
+        "valueField": "infDev2",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    }],
+    "chartScrollbar": {
+        "autoGridCount": true,
+        "graph": "g2",
+        "scrollbarHeight": 40
+    },
+    "dataDateFormat": "YYYY-MM-DD",
+    "chartCursor": {
+        "categoryBalloonDateFormat": "DD MMM - HHч",
+    },
+    "categoryField": "date",
+    "categoryAxis": {
+        "minPeriod": "hh",
+        "parseDates": true,
+        "axisColor": "#DADADA",
+        "dashLength": 1,
+        "minorGridEnabled": true
+    },
+});
+var sens3Chart = AmCharts.makeChart("sens3div", {
+    "type": "serial",
+    "theme": "light",
+    "titles":[{"text":"Дым"}],
+    "marginRight": 20,
+    "autoMarginOffset": 20,
+    "marginTop": 5,
+    "dataProvider": sens3Data,
+    "fontFamily": "Roboto",
+    "valueAxes": [{
+        "axisAlpha": 0.2,
+        "dashLength": 1,
+        "position": "left"
+    }],
+    "legend": {
+        "equalWidths": false,
+        "useGraphSettings": true,
+        "valueAlign": "left",
+        "valueWidth": 120,
+        "valueText": "[[value]] ppm",
+    },
+    "startDuration": 1,
+    "mouseWheelZoomEnabled": true,
+    "graphs": [{
+        "id": "g3",
+        "balloonText": "[[value]] ppm",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "ш. Марпосадское",
+        "valueField": "infDev3",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    },{
+        "id": "g2",
+        "balloonText": "[[value]] ppm",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "Ярославкая",
+        "valueField": "infDev2",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    }],
+    "chartScrollbar": {
+        "autoGridCount": true,
+        "graph": "g2",
+        "scrollbarHeight": 40
+    },
+    "dataDateFormat": "YYYY-MM-DD",
+    "chartCursor": {
+        "categoryBalloonDateFormat": "DD MMM - HHч",
+    },
+    "categoryField": "date",
+    "categoryAxis": {
+        "minPeriod": "hh",
+        "parseDates": true,
+        "axisColor": "#DADADA",
+        "dashLength": 1,
+        "minorGridEnabled": true
+    },
+});
+var sens4Chart = AmCharts.makeChart("sens4div", {
+    "type": "serial",
+    "theme": "light",
+    "titles":[{"text":"Водород"}],
+    "marginRight": 20,
+    "autoMarginOffset": 20,
+    "marginTop": 5,
+    "dataProvider": sens4Data,
+    "fontFamily": "Roboto",
+    "valueAxes": [{
+        "axisAlpha": 0.2,
+        "dashLength": 1,
+        "position": "left"
+    }],
+    "legend": {
+        "equalWidths": false,
+        "useGraphSettings": true,
+        "valueAlign": "left",
+        "valueWidth": 120,
+        "valueText": "[[value]] ppm",
+    },
+    "startDuration": 1,
+    "mouseWheelZoomEnabled": true,
+    "graphs": [{
+        "id": "g3",
+        "balloonText": "[[value]] ppm",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "ш. Марпосадское",
+        "valueField": "infDev3",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    },{
+        "id": "g2",
+        "balloonText": "[[value]] ppm",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "Ярославкая",
+        "valueField": "infDev2",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        },
+        "fillAlphas": 0.2
+    }],
+    "chartScrollbar": {
+        "autoGridCount": true,
+        "graph": "g2",
+        "scrollbarHeight": 40
+    },
+    "dataDateFormat": "YYYY-MM-DD",
+    "chartCursor": {
+        "categoryBalloonDateFormat": "DD MMM - HHч",
+    },
+    "categoryField": "date",
+    "categoryAxis": {
+        "minPeriod": "hh",
+        "parseDates": true,
+        "axisColor": "#DADADA",
+        "dashLength": 1,
+        "minorGridEnabled": true
+    },
+});
+    </script>
+
+</html>
