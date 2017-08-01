@@ -166,7 +166,7 @@ var tempChart = AmCharts.makeChart("tempdiv", {
     }],
     "chartScrollbar": {
         "autoGridCount": true,
-        "graph": "g2",
+        "graph": "g3",
         "scrollbarHeight": 40
     },
     "dataDateFormat": "YYYY-MM-DD",
@@ -239,7 +239,7 @@ var pressChart = AmCharts.makeChart("pressdiv", {
     }],
     "chartScrollbar": {
         "autoGridCount": true,
-        "graph": "g2",
+        "graph": "g3",
         "scrollbarHeight": 40
     },
     "dataDateFormat": "YYYY-MM-DD",
@@ -536,6 +536,14 @@ var sens4Chart = AmCharts.makeChart("sens4div", {
         "minorGridEnabled": true
     },
 });
+sens4Chart.addListener("rendered", function() {
+    [tempChart,pressChart,sens1Chart,sens2Chart,sens3Chart,sens4Chart].forEach((chart) => {
+        let startDay = new Date();
+        startDay.setHours(0,0,0);
+        chart.zoomToDates(startDay ,new Date());
+    });
+});
+
     </script>
 
 </html>
