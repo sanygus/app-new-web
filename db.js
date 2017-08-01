@@ -9,7 +9,7 @@ MongoClient.connect('mongodb://localhost:27017/exapp', function(err, dblink) {
 });
 
 module.exports.getSensors = (callback) => {
-  let cursor = db.collection('sensors').find().sort({ "resDate": -1 });
+  let cursor = db.collection('sensors').find().sort({ "resDate": 1 });
   const tempData = [];
   const pressData = [];
   const sens1Data = [];
