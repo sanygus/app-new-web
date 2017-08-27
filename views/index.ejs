@@ -5,13 +5,9 @@
 		<title>S&Co [Monitoring]</title>
 		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.28/css/uikit.min.css" />
-        <style>
-            .chartdiv { width:850px;height:500px;padding-top:20px; }
-        </style>
+        <link rel="stylesheet" href="/static/main.css" />
 	</head>
-	<body style="font-family: 'Roboto', sans-serif;">
-
-
+	<body>
         <div class="uk-container">
             <h1>S&Co</h1>
             <hr>
@@ -29,7 +25,11 @@
                                 <h4 class="uk-margin-remove-bottom"><%= dev.location %></h4>
                                 <p class="uk-text-meta uk-margin-remove-top">Режим: Энергосбережение</p>
                             <% } else if (dev.status.event === "wakeup") { %>
-                                <div class="uk-card-badge uk-label">Online</div>
+                                <% if (dev.stream) { %>
+                                    <div class="uk-card-badge uk-label uk-label-danger uk-button openlive" devid="<%= dev.iddev %>">Live</div>
+                                <% } else { %>
+                                    <div class="uk-card-badge uk-label">Online</div>
+                                <% } %>
                                 <h4 class="uk-margin-remove-bottom"><%= dev.location %></h4>
                                 <p class="uk-text-meta uk-margin-remove-top">Режим: Работает</p>
                             <% } %>
@@ -74,7 +74,17 @@
             <hr>
         </div>
 
-        <div id="periodSelector" style="position:fixed;width:170px;height:400px;bottom:50px;right:10px;">
+        <div id="modal-media-livestream" class="uk-flex-top" uk-modal>
+            <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+                <button class="uk-modal-close-outside" type="button" uk-close></button>
+                <video uk-video muted id="livestream"></video>
+                <div class="uk-overlay uk-light uk-position-top">
+                    <p>Default Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="periodSelector" style="">
             <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body uk-box-shadow-large">
                 
                 <button class="uk-button uk-button-default uk-width-1-1" id="zb0" onclick="zoomCharts(0)">День</button>
@@ -100,214 +110,6 @@
     <script>
 let tmpfiles = <%- JSON.stringify(files) %>
 let tmpsensors = <%- JSON.stringify(sensors) %>
-tmpsensors = tmpsensors.map((sensor) => {
-    if (sensor.date) { sensor.date = new Date(sensor.date) }
-    if (sensor.gas1) {
-        sensor.gas1 = Math.round((sensor.gas1[0] + sensor.gas1[1] + sensor.gas1[2] + sensor.gas1[3]) / 4)
-    }
-    if (sensor.charge) { sensor.charge = Math.round(sensor.charge.toFixed(2) * 100) }
-    sensor.imageValue = 1;
-    let imglink = tmpfiles[sensor.dev].filter((f) => {
-        return f.indexOf(sensor.date.toJSON().substring(0, 15)) == 0 
-    })[0];
-    sensor.image = '/photos/' + sensor.dev + '/' + imglink;
-    return sensor;
-})
-
-const sensors = {}
-let tmpsens = {};
-tmpsensors.forEach((sensor) => {
-    if (sensor.dev) {
-        tmpsens = {}
-        Object.assign(tmpsens, sensor)
-        delete tmpsens.dev
-        if (sensors[sensor.dev] === undefined) {
-            sensors[sensor.dev] = []
-        }
-        sensors[sensor.dev].push(tmpsens)
-    }
-})
-
-const charts = {}
-let zoomCharts;
-AmCharts.ready(() => {
-
-    for (let dev in sensors) {
-        charts[dev] = AmCharts.makeChart(
-            "chartdiv-" + dev,
-            {
-                "type": "serial",
-                "theme": "light",
-                "language": "ru",
-                "legend": {
-                    "useGraphSettings": true,
-                    "labelWidth": 120,
-                    "align": "center"
-                },
-                "dataProvider": sensors[dev],
-                "synchronizeGrid": true,
-                "fontFamily": "Roboto",
-                "valueAxes": [{
-                    "id":"vtemp",
-                    "axisColor": "#FF6600",
-                    "axisThickness": 2,
-                    "axisAlpha": 1,
-                    "position": "left"
-                }, {
-                    "id":"vpress",
-                    "axisColor": "#FCD202",
-                    "axisThickness": 2,
-                    "offset": 50,
-                    "axisAlpha": 1,
-                    "position": "left"
-                }, {
-                    "id":"vmic",
-                    "axisColor": "#B0DE09",
-                    "axisThickness": 2,
-                    "axisAlpha": 1,
-                    "position": "right"
-                }, {
-                    "id":"vgas1",
-                    "axisColor": "#828282",
-                    "axisThickness": 2,
-                    "offset": 50,
-                    "axisAlpha": 1,
-                    "position": "right"
-                }, {
-                    "id":"vcharge",
-                    "axisColor": "#5339BA",
-                    "axisThickness": 2,
-                    "offset": 100,
-                    "axisAlpha": 1,
-                    "position": "right",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "unit": "%",
-                }],
-                "graphs": [{
-                    "valueAxis": "vtemp",
-                    "balloonText": "[[value]] °C",
-                    "legendValueText": "[[value]] °C",
-                    "lineColor": "#FF6600",
-                    "bullet": "round",
-                    "bulletBorderThickness": 1,
-                    "hideBulletsCount": 30,
-                    "title": "Температура",
-                    "valueField": "temp",
-                    "type": "line",
-                    "fillAlphas": 0,
-                }, {
-                    "valueAxis": "vpress",
-                    "balloonText": "[[value]] мрс",
-                    "legendValueText": "[[value]] мрс",
-                    "lineColor": "#FCD202",
-                    "bullet": "round",
-                    "bulletBorderThickness": 1,
-                    "hideBulletsCount": 30,
-                    "title": "Давление",
-                    "valueField": "press",
-                    "type": "line",
-                    "fillAlphas": 0
-                }, {
-                    "valueAxis": "vmic",
-                    "balloonText": "[[value]] ед.",
-                    "legendValueText": "[[value]] ед.",
-                    "lineColor": "#B0DE09",
-                    "bullet": "round",
-                    "bulletBorderThickness": 1,
-                    "hideBulletsCount": 30,
-                    "title": "Шум",
-                    "valueField": "mic",
-                    "type": "line",
-                    "fillAlphas": 0
-                }, {
-                    "valueAxis": "vgas1",
-                    "balloonText": "[[value]] ppm",
-                    "legendValueText": "[[value]] ppm",
-                    "lineColor": "#828282",
-                    "bullet": "round",
-                    "bulletBorderThickness": 1,
-                    "hideBulletsCount": 30,
-                    "title": "Газы 1",
-                    "valueField": "gas1",
-                    "type": "line",
-                    "fillAlphas": 0
-                }, {
-                    "valueAxis": "vcharge",
-                    "balloonText": "[[value]] %",
-                    "legendValueText": "[[value]] %",
-                    "lineColor": "#5339BA",
-                    "bullet": "round",
-                    "bulletBorderThickness": 1,
-                    "hideBulletsCount": 30,
-                    "title": "Заряд",
-                    "valueField": "charge",
-                    "type": "line",
-                    "fillAlphas": 0,
-                    "hidden": true,
-                },{
-                    //"valueAxis": "v4",
-                    "bullet": "custom",
-                    "lineAlpha": 0,
-                    "showBalloon": false,
-                    "bulletSize": 80,
-                    "bulletOffset": 365,
-                    "customBulletField": "image",
-                    "bulletBorderThickness": 1,
-                    "hideBulletsCount": 30,
-                    "valueField": "imageValue",
-                    "fillAlphas": 0,
-                    "visibleInLegend": false,
-                    "stackable": false,
-                }],
-                //"chartScrollbar": {},
-                "chartCursor": {
-                    "cursorPosition": "mouse",
-                    "selectWithoutZooming": true,
-                    "categoryBalloonDateFormat": "MMM DD JJ:NN",
-                    "cursorColor": "#444444"
-                },
-                "startDuration": 0.5,
-                "categoryField": "date",
-                "categoryAxis": {
-                    "parseDates": true,
-                    "axisColor": "#DADADA",
-                    "minPeriod": "ss",
-                },
-                "listeners": [{
-                    "event": "clickGraphItem",
-                    "method": function(event) {
-                      openLB(event.item.dataContext);
-                    }
-                }]
-            }
-        );
-    }
-
-    const endday = new Date();
-    endday.setHours(23, 59, 59);
-    for (let ch in charts) {
-        charts[ch].dataProvider.push({"date": endday});
-        charts[ch].validateData();
-    }
-    zoomCharts = (days) => {
-        let startday = new Date();
-        startday.setHours(0, 0, 0);
-        if (days && days > 0) {
-            startday = new Date(startday - 1000 * 60 * 60 * 24 * days)
-        }
-        for (let ch in charts) {
-            charts[ch].zoomToDates(startday, endday);
-        }
-        $('#periodSelector .uk-button-primary').addClass('uk-button-default');
-        $('#periodSelector .uk-button-primary').removeClass('uk-button-primary');
-        $('#zb'+days).removeClass('uk-button-default');
-        $('#zb'+days).addClass('uk-button-primary');
-    }
-    zoomCharts(0);
-
-    
-});
 
 const openLB = (data) => {
     console.log(data);
@@ -315,6 +117,8 @@ const openLB = (data) => {
     $('#openLBbutton').attr("caption", data.date.toLocaleString('ru'));
     $('#openLBbutton').click();
 }
-
     </script>
+    <script src="/static/js/charts.js"></script>
+    <script src="/static/js/dash.all.debug.js"></script>
+    <script src="/static/js/player.js"></script>
 </html>

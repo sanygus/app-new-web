@@ -1,0 +1,19 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
+.chartdiv {
+  width:850px;
+  height:500px;
+  padding-top:20px;
+}
+#periodSelector {
+  position:fixed;
+  width:170px;
+  height:400px;
+  bottom:50px;
+  right:10px;
+}
+#livestream {
+  width: 640px;
+  height: 480px;
+}

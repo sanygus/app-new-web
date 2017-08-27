@@ -7,6 +7,8 @@ const async = require('async');
 const photosdir = __dirname + '/../app-new/photos';
 let state = [];
 
+express.static.mime.define({'text/plain': ['mpd','m4s']});
+
 app.set('view engine', 'ejs');
 
 app.use('/static', express.static(__dirname + '/static'));
@@ -40,7 +42,6 @@ app.get('/', function(req, res) {
 const getState = () => {
   request('http://geoworks.pro:3000/state', (error, resp, body) => {
     if (resp && resp.statusCode === 200) {
-      //state = [];
       const newstate = [];
       try {
         newstate.push(...JSON.parse(body));
@@ -48,25 +49,16 @@ const getState = () => {
       async.each(newstate, (dev, callback) => {
         if (dev.status.event === "wakeup") {
           request(`http://geoworks.pro:3000/${dev.iddev}/diag`, (error, resp, body) => {
-            
             const { state: devstate } = JSON.parse(body);
-            dev.live = devstate === "streaming Video";
-            if (devstate === "wait") {
-              request(`http://geoworks.pro:3000/${dev.iddev}/stream/start`, (error, resp, body) => {
-                if (JSON.parse(body).ok) {
-                  dev.live = true;
-                }
-                callback();
-              });
-            } else {
-              console.log("no req");
-              callback();
-            }
-
+            dev.stream = devstate === "streaming Video";
+            callback();
           });
+        } else {
+          callback();
         }
       }, () => {//end each
-        console.log(newstate);
+        state = [];
+        state.push(...newstate);
       });
     }/* else {}*/
   });
