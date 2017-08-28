@@ -1,18 +1,18 @@
 const express = require('express');
 const request = require('request');
+const cors = require('cors');
 const app = express();
 const fs = require('fs');
 const db = require('./db');
 const async = require('async');
+const mpdConverter = require('./mpd-converter');
 const photosdir = __dirname + '/../app-new/photos';
 let state = [];
 
-express.static.mime.define({'text/plain': ['mpd','m4s']});
+//express.static.mime.define({'application/xml': ['mpd']});
+app.use(cors({ origin: true }));
 
 app.set('view engine', 'ejs');
-
-app.use('/static', express.static(__dirname + '/static'));
-app.use('/photos', express.static(photosdir));
 
 app.get('/', function(req, res) {
   async.parallel({
@@ -37,6 +37,7 @@ app.get('/', function(req, res) {
     }
   );
 });
+
 
 
 const getState = () => {
@@ -65,5 +66,15 @@ const getState = () => {
 }
 setInterval(getState, 5 * 60 * 1000);
 getState();
+
+app.get('/static/stream/:devid/manifest.mpd', function(req, res) {
+  res.setHeader('Content-Type', 'application/xml');
+  mpdConverter(`static/stream/${req.params.devid}/manifest.mpd`, (err, data) => {
+    res.end(data);
+  });
+});
+
+app.use('/static', express.static(__dirname + '/static'));
+app.use('/photos', express.static(photosdir));
 
 app.listen(5000);
