@@ -38,8 +38,6 @@ app.get('/', function(req, res) {
   );
 });
 
-
-
 const getState = () => {
   request('http://geoworks.pro:3000/state', (error, resp, body) => {
     if (resp && resp.statusCode === 200) {
@@ -64,7 +62,7 @@ const getState = () => {
     }/* else {}*/
   });
 }
-setInterval(getState, 5 * 60 * 1000);
+setInterval(getState, 15 * 60000);
 getState();
 
 app.get('/static/stream/:devid/manifest.mpd', function(req, res) {
