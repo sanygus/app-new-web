@@ -8,7 +8,9 @@ tmpsensors = tmpsensors.map((sensor) => {
     let imglink = tmpfiles[sensor.dev].filter((f) => {
         return f.indexOf(sensor.date.toJSON().substring(0, 15)) == 0 
     })[0];
-    sensor.image = '/photos/' + sensor.dev + '/' + imglink;
+    if (imglink) {
+        sensor.image = '/photos/' + sensor.dev + '/' + imglink;
+    }
     return sensor;
 })
 
