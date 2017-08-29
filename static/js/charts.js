@@ -14,21 +14,21 @@ tmpsensors = tmpsensors.map((sensor) => {
     return sensor;
 })
 
-const sensors = {}
+const sensors = {};
 let tmpsens = {};
 tmpsensors.forEach((sensor) => {
     if (sensor.dev) {
-        tmpsens = {}
-        Object.assign(tmpsens, sensor)
-        delete tmpsens.dev
+        tmpsens = {};
+        Object.assign(tmpsens, sensor);
+        delete tmpsens.dev;
         if (sensors[sensor.dev] === undefined) {
-            sensors[sensor.dev] = []
+            sensors[sensor.dev] = [];
         }
-        sensors[sensor.dev].push(tmpsens)
+        sensors[sensor.dev].push(tmpsens);
     }
 })
 
-const charts = {}
+const charts = {};
 let zoomCharts;
 AmCharts.ready(() => {
 
