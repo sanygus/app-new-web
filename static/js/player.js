@@ -38,7 +38,7 @@ $( "#modal-media-livestream" ).on('hide.uk.modal', function () {
 let labelState = true;
 let labelAnimateTimer;
 const labelAnimate = () => {
-	$( "#livestream-label" ).animate({opacity: labelState ? 0.6 : 1}, 1000);
+	$( "#livestream-label" ).animate({opacity: labelState ? 0.4 : 1}, 1000);
 	labelState = !labelState;
 }
 
