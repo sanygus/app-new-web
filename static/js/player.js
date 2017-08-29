@@ -12,12 +12,12 @@ player.getDebug().setLogToBrowserConsole(false);
 player.initialize(document.getElementById('livestream'), null, true);
 player.on(dashjs.MediaPlayer.events['ERROR'], errorHandler);
 player.on(dashjs.MediaPlayer.events['PLAYBACK_ERROR'], () => {
-  $( ".livestream-spinner" ).fadeIn(2000);
+  $( ".livestream-spinner" ).fadeIn(1000);
   errorHandler();
 });
 player.on(dashjs.MediaPlayer.events['CAN_PLAY'], () => {
-  labelAnimateTimer = setInterval(labelAnimate, 2000);
-  $( ".livestream-spinner" ).fadeOut(2000);
+  labelAnimateTimer = setInterval(labelAnimate, 1000);
+  $( ".livestream-spinner" ).fadeOut(1000);
 });
 
 $( ".openlive" ).click(function () {
@@ -31,13 +31,14 @@ $( ".openlive" ).click(function () {
 $( "#modal-media-livestream" ).on('hide.uk.modal', function () {
   manifsetURL = null;
   player.attachSource(manifsetURL);
+  $( ".livestream-spinner" ).fadeIn(2000);
   clearInterval(labelAnimateTimer);
 })
 
 let labelState = true;
 let labelAnimateTimer;
 const labelAnimate = () => {
-	$( "#livestream-label" ).animate({opacity: labelState ? 0.6 : 1}, 2000);
+	$( "#livestream-label" ).animate({opacity: labelState ? 0.6 : 1}, 1000);
 	labelState = !labelState;
 }
 
