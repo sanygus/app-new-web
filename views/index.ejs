@@ -30,7 +30,7 @@
                                 <% } else { %>
                                     <div class="uk-card-badge uk-label">Online</div>
                                 <% } %>
-                                <h4 class="uk-margin-remove-bottom"><%= dev.location %></h4>
+                                <h4 class="uk-margin-remove-bottom" id="location-<%= dev.iddev %>"><%= dev.location %></h4>
                                 <p class="uk-text-meta uk-margin-remove-top">Режим: Работает</p>
                             <% } %>
                             <hr>
@@ -74,19 +74,19 @@
             <hr>
         </div>
 
-        <div id="modal-media-livestream" class="uk-flex-top" uk-modal>
+        <div id="modal-media-livestream" class="uk-flex-top" uk-modals>
             <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
                 <button class="uk-modal-close-outside" type="button" uk-close></button>
-                <video controls uk-video muted id="livestream"></video>
-                <div class="uk-overlay uk-light uk-position-top">
-                    <p>Default Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <video uk-video muted id="livestream"></video>
+                <div class="uk-overlay uk-position-top">
+                    <p><span id="livestream-location"></span>&emsp;&emsp;&emsp;<span id="livestream-time"></span><span style="position:absolute;right:20px;opacity:0;" class="uk-label uk-label-danger" id="livestream-label">LIVE</span></p>
                 </div>
+                <div uk-spinner class="livestream-spinner"></div>
             </div>
         </div>
 
         <div id="periodSelector" style="">
             <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body uk-box-shadow-large">
-                
                 <button class="uk-button uk-button-default uk-width-1-1" id="zb0" onclick="zoomCharts(0)">День</button>
                 <button class="uk-button uk-button-default uk-width-1-1" id="zb7" onclick="zoomCharts(7)">Неделя</button>
                 <button class="uk-button uk-button-default uk-width-1-1" id="zb30" onclick="zoomCharts(30)">Месяц</button>
@@ -110,6 +110,12 @@
     <script>
 let tmpfiles = <%- JSON.stringify(files) %>
 let tmpsensors = <%- JSON.stringify(sensors) %>
+const currentDate = new Date("<%- (new Date).toJSON() %>");
+currentDate.setSeconds(currentDate.getSeconds() - 38);
+setInterval(() => {
+    currentDate.setSeconds(currentDate.getSeconds() + 1);
+    $( "#livestream-time" ).text(currentDate.toLocaleTimeString());
+}, 1000);
 
 const openLB = (data) => {
     console.log(data);
@@ -117,6 +123,7 @@ const openLB = (data) => {
     $('#openLBbutton').attr("caption", data.date.toLocaleString('ru'));
     $('#openLBbutton').click();
 }
+
     </script>
     <script src="/static/js/charts.js"></script>
     <script src="/static/js/dash.all.debug.js"></script>
