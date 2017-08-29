@@ -21,8 +21,8 @@
                             <% } %>
                         </div>
                         <div class="uk-card-body">
+                            <h4 class="uk-margin-remove-bottom" id="location-<%= dev.iddev %>"><%= dev.location %></h4>
                             <% if (dev.status.event === "sleep") { %>
-                                <h4 class="uk-margin-remove-bottom"><%= dev.location %></h4>
                                 <p class="uk-text-meta uk-margin-remove-top">Режим: Энергосбережение</p>
                             <% } else if (dev.status.event === "wakeup") { %>
                                 <% if (dev.stream) { %>
@@ -30,7 +30,6 @@
                                 <% } else { %>
                                     <div class="uk-card-badge uk-label">Online</div>
                                 <% } %>
-                                <h4 class="uk-margin-remove-bottom" id="location-<%= dev.iddev %>"><%= dev.location %></h4>
                                 <p class="uk-text-meta uk-margin-remove-top">Режим: Работает</p>
                             <% } %>
                             <hr>
