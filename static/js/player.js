@@ -9,7 +9,7 @@ const errorHandler = (error) => {
 
 const player = dashjs.MediaPlayer().create();
 player.getDebug().setLogToBrowserConsole(false);
-player.initialize($( "#livestream" ), null, true);
+player.initialize(document.getElementById('livestream'), null, true);
 player.on(dashjs.MediaPlayer.events['ERROR'], errorHandler);
 player.on(dashjs.MediaPlayer.events['PLAYBACK_ERROR'], () => {
   $( ".livestream-spinner" ).fadeIn(2000);
@@ -22,7 +22,7 @@ player.on(dashjs.MediaPlayer.events['CAN_PLAY'], () => {
 
 $( ".openlive" ).click(function () {
   const devid = $( this ).attr("devid");
-  $ ( "#livestream-location" ).text($( "#location-" + devid ).text());
+  $( "#livestream-location" ).text($( "#location-" + devid ).text());
   manifsetURL = "/static/stream/" + devid + "/manifest.mpd";
   player.attachSource(manifsetURL);
   UIkit.modal($( "#modal-media-livestream" )).show();
