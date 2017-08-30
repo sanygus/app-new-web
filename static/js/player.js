@@ -33,7 +33,7 @@ $( "#modal-media-livestream" ).on('hide.uk.modal', function () {
   player.attachSource(manifsetURL);
   $( ".livestream-spinner" ).fadeIn(2000);
   clearInterval(labelAnimateTimer);
-})
+});
 
 let labelState = true;
 let labelAnimateTimer;
@@ -42,3 +42,6 @@ const labelAnimate = () => {
 	labelState = !labelState;
 }
 
+$( ".livestream-fullscreen" ).click(() => {
+  document.getElementById('livestream').webkitEnterFullScreen();
+});
