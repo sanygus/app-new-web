@@ -1,3 +1,4 @@
+<% Date.names.splice(12,12,"Января","Февраля","Марта","Апреля","Мая","Июня","Июля","Августа","Сентября","Октября","Ноября","Декабря"); %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -38,7 +39,7 @@
                                 }).reverse()[0]
                                 if (currentsens) {
                             %>
-                                <p class="uk-text-meta uk-margin-remove-top">Показания от <%= new Date(currentsens.date).toLocaleString('ru').substring(5, 15) %></p>
+                                <p class="uk-text-meta uk-margin-remove-top">Показания от <%= currentsens.date.date("DD MMMM, HH:MM") %></p>
                                 <small><ul class="uk-list uk-list-divider uk-list-small">
                                 <% if (currentsens.temp) { %>
                                     <li>Температура: <b><%= currentsens.temp %> &deg;C</b></li>

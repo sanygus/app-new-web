@@ -6,6 +6,7 @@ const fs = require('fs');
 const db = require('./db');
 const async = require('async');
 const mpdConverter = require('./mpd-converter');
+require("date-format-lite");
 const photosdir = __dirname + '/../app-new/photos';
 let state = [];
 
