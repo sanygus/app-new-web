@@ -1,14 +1,14 @@
 <% Date.names.splice(12,12,"Января","Февраля","Марта","Апреля","Мая","Июня","Июля","Августа","Сентября","Октября","Ноября","Декабря"); %>
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>S&Co [Monitoring]</title>
-		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.28/css/uikit.min.css" />
+    <head>
+        <meta charset="utf-8">
+        <title>S&Co [Monitoring]</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/css/uikit.min.css" />
         <link rel="stylesheet" href="/static/main.css" />
-	</head>
-	<body>
+    </head>
+    <body>
         <div class="uk-container">
             <h1>S&Co</h1>
             <hr>
@@ -26,7 +26,7 @@
                             <% if (dev.status.event === "sleep") { %>
                                 <p class="uk-text-meta uk-margin-remove-top">Режим: Энергосбережение</p>
                             <% } else if (dev.status.event === "wakeup") { %>
-                                <% if (dev.stream) { %>
+                                <% if (dev.stream && stream[dev.iddev].live) { %>
                                     <div class="uk-card-badge uk-label uk-label-danger uk-button openlive" devid="<%= dev.iddev %>">Live</div>
                                 <% } else { %>
                                     <div class="uk-card-badge uk-label">Online</div>
@@ -75,7 +75,7 @@
         </div>
 
         <div id="modal-media-livestream" class="uk-flex-top" uk-modals>
-            <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+            <div class="uk-modal-dialog " style="width: 640px;">
                 <button class="uk-modal-close-outside" type="button" uk-close></button>
                 <video uk-video muted id="livestream"></video>
                 <div class="uk-overlay uk-overlay-default uk-position-top" style="padding:8px 0px 8px 30px;background:rgba(255,255,255,.4);">
@@ -105,10 +105,10 @@
                 <a class="uk-button uk-button-default" id="openLBbutton" href="" caption=""></a>
             </div>
         </div>
-	</body>
+    </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.28/js/uikit.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.28/js/uikit-icons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.25/js/uikit-icons.min.js"></script>
     <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
     <script src="https://www.amcharts.com/lib/3/serial.js"></script>
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
@@ -116,12 +116,12 @@
     <script>
 let tmpfiles = <%- JSON.stringify(files) %>
 let tmpsensors = <%- JSON.stringify(sensors) %>
-const currentDate = new Date("<%- (new Date).toJSON() %>");
-currentDate.setSeconds(currentDate.getSeconds() - 32);
+/*currentDate.setSeconds(currentDate.getSeconds() - 32);
 setInterval(() => {
     currentDate.setSeconds(currentDate.getSeconds() + 1);
     $( "#livestream-time" ).text(currentDate.toLocaleTimeString());
-}, 1000);
+}, 1000);*/
+const renderDate = new Date("<%- (new Date).toJSON() %>");
 const streams = <%- JSON.stringify(stream) %>
 
 const openLB = (data) => {

@@ -1,4 +1,5 @@
 let player;
+let devIDStream;
 const PlayerInit = (manifestURL) => {
   const errorHandler = (/*error*/) => {
     PlayerReset();
@@ -14,8 +15,24 @@ const PlayerInit = (manifestURL) => {
     errorHandler(e);
   });
   player.on(dashjs.MediaPlayer.events['CAN_PLAY'], () => {
-    labelAnimateTimer = setInterval(labelAnimate, 1000);
-    $( ".livestream-spinner" ).fadeOut(1000);
+    if (streams[devIDStream]) {
+      if (streams[devIDStream].live) {
+        labelAnimateTimer = setInterval(labelAnimate, 1000);
+      }
+      streamTimeTimer = setInterval(() => {
+        let streamPlaybackTime = new Date(streams[devIDStream].date);
+        streamPlaybackTime.setSeconds(streamPlaybackTime.getSeconds() + player.time());
+        $( "#livestream-time" ).text(streamPlaybackTime.toLocaleTimeString());
+      }, 1000);
+      $( ".livestream-spinner" ).fadeOut(1000);
+    }
+  });
+  player.on(dashjs.MediaPlayer.events['PLAYBACK_PLAYING'], () => {
+
+  });
+  player.on(dashjs.MediaPlayer.events['PLAYBACK_PAUSED'], () => {
+    clearInterval(labelAnimateTimer);
+    clearInterval(streamTimeTimer);
   });
 }
 const PlayerReset = () => {
@@ -27,16 +44,18 @@ const PlayerReset = () => {
 }
 
 $( ".openlive" ).click(function () {
-  const devid = $( this ).attr("devid");
-  $( "#livestream-location" ).text($( "#location-" + devid ).text());
+  devIDStream = $( this ).attr("devid");
+  $( "#livestream-location" ).text($( "#location-" + devIDStream ).text());
   UIkit.modal($( "#modal-media-livestream" )).show();
-  PlayerInit("/static/stream/" + devid + "/manifest.mpd");
+  PlayerInit("/static/stream/" + devIDStream + "/manifest.mpd");
 });
+  
 
 $( "#modal-media-livestream" ).on('hide.uk.modal', function () {
   PlayerReset();
   $( ".livestream-spinner" ).fadeIn(2000);
   clearInterval(labelAnimateTimer);
+  clearInterval(streamTimeTimer);
 });
 
 let labelState = true;
@@ -45,6 +64,7 @@ const labelAnimate = () => {
   $( "#livestream-label" ).animate({opacity: labelState ? 0.4 : 1}, 1000);
   labelState = !labelState;
 }
+let streamTimeTimer;
 
 $( ".livestream-fullscreen" ).click(() => {
   document.getElementById('livestream').webkitEnterFullScreen();
