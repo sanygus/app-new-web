@@ -47,3 +47,18 @@ module.exports.getSensors = (callback) => {
     }
   });*/
 }
+
+module.exports.getStream = (callback) => {
+  db.collection('stream').find({}, { _id: 0 }).toArray((err, data) => {
+    const obj = {};
+    let tdevid;
+    for (let devstream of data) {
+      if (devstream.devid) {
+        tdevid = devstream.devid;
+        delete devstream.devid;
+        obj[tdevid] = devstream;
+      }
+    }
+    callback(err, obj);
+  });
+}

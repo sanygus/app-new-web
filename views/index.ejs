@@ -39,7 +39,7 @@
                                 }).reverse()[0]
                                 if (currentsens) {
                             %>
-                                <p class="uk-text-meta uk-margin-remove-top">Показания от <%= currentsens.date.date("DD MMMM, HH:MM") %></p>
+                                <p class="uk-text-meta uk-margin-remove-top">Показания от <%= currentsens.date.date("DD MMMM, hh:mm") %></p>
                                 <small><ul class="uk-list uk-list-divider uk-list-small">
                                 <% if (currentsens.temp) { %>
                                     <li>Температура: <b><%= currentsens.temp %> &deg;C</b></li>
@@ -78,7 +78,7 @@
             <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
                 <button class="uk-modal-close-outside" type="button" uk-close></button>
                 <video uk-video muted id="livestream"></video>
-                <div class="uk-overlay uk-overlay-default uk-position-top" style="padding:8px 0px 8px 30px;background:rgba(255,255,255,.6);">
+                <div class="uk-overlay uk-overlay-default uk-position-top" style="padding:8px 0px 8px 30px;background:rgba(255,255,255,.4);">
                     <p>
                         <span id="livestream-location"></span>
                         &emsp;&emsp;&emsp;
@@ -117,11 +117,12 @@
 let tmpfiles = <%- JSON.stringify(files) %>
 let tmpsensors = <%- JSON.stringify(sensors) %>
 const currentDate = new Date("<%- (new Date).toJSON() %>");
-currentDate.setSeconds(currentDate.getSeconds() - 38);
+currentDate.setSeconds(currentDate.getSeconds() - 32);
 setInterval(() => {
     currentDate.setSeconds(currentDate.getSeconds() + 1);
     $( "#livestream-time" ).text(currentDate.toLocaleTimeString());
 }, 1000);
+const streams = <%- JSON.stringify(stream) %>
 
 const openLB = (data) => {
     console.log(data);

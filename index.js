@@ -31,6 +31,7 @@ app.get('/', function(req, res) {
           });
         });
       },
+      stream: db.getStream,
     },
     (err, results) => {
       Object.assign(results, { state });
