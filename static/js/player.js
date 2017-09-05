@@ -4,7 +4,11 @@ const PlayerInit = (manifestURL) => {
   const errorHandler = (/*error*/) => {
     PlayerReset();
     console.log('playing error, restarting');
-    setTimeout(() => { PlayerInit(manifestURL); }, 2000);
+    setTimeout(() => {
+      if ($('#modal-media-livestream').css('display') === 'block') {
+        PlayerInit(manifestURL);
+      }
+    }, 2000);
   }
   player = dashjs.MediaPlayer().create();
   player.getDebug().setLogToBrowserConsole(false);
