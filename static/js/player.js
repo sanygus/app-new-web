@@ -23,7 +23,7 @@ const PlayerInit = (manifestURL) => {
       if (streams[devIDStream].live) {
         labelAnimateTimer = setInterval(labelAnimate, 1000);
       } else {
-        $('#livestream').attr('controls', "")
+        $('#livestream').attr('controls', "");
       }
       streamTimeTimer = setInterval(() => {
         let streamPlaybackTime = new Date(streams[devIDStream].date);
@@ -43,9 +43,11 @@ const PlayerInit = (manifestURL) => {
 }
 const PlayerReset = () => {
   setTimeout(() => {
-    player.pause();
-    player.reset();
-    player = null;
+    if (player) {
+      player.pause();
+      player.reset();
+      player = null;
+    }
   }, 10);
 }
 
@@ -55,17 +57,17 @@ $( ".openlive" ).click(function () {
   UIkit.modal($( "#modal-media-livestream" )).show();
   PlayerInit("/static/stream/" + devIDStream + "/manifest.mpd");
 });
-  
 
 $( "#modal-media-livestream" ).on('hide.uk.modal', function () {
   PlayerReset();
   $( ".livestream-spinner" ).fadeIn(2000);
   clearInterval(labelAnimateTimer);
   clearInterval(streamTimeTimer);
-  if $('#livestream').attr('controls') {
+  $( "#livestream-label" ).animate({opacity: 0}, 1);
+  $( "#livestream-time" ).text('');
+  if ($('#livestream').attr('controls')) {
     $('#livestream').removeAttr('controls');
   }
-  $( "#livestream-time" ).text('');
 });
 
 let labelState = true;
