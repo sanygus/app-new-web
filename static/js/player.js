@@ -18,6 +18,8 @@ const PlayerInit = (manifestURL) => {
     if (streams[devIDStream]) {
       if (streams[devIDStream].live) {
         labelAnimateTimer = setInterval(labelAnimate, 1000);
+      } else {
+        $('#livestream').attr('controls', "")
       }
       streamTimeTimer = setInterval(() => {
         let streamPlaybackTime = new Date(streams[devIDStream].date);
@@ -56,6 +58,10 @@ $( "#modal-media-livestream" ).on('hide.uk.modal', function () {
   $( ".livestream-spinner" ).fadeIn(2000);
   clearInterval(labelAnimateTimer);
   clearInterval(streamTimeTimer);
+  if $('#livestream').attr('controls') {
+    $('#livestream').removeAttr('controls');
+  }
+  $( "#livestream-time" ).text('');
 });
 
 let labelState = true;

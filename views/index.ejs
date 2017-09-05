@@ -24,6 +24,9 @@
                         <div class="uk-card-body">
                             <h4 class="uk-margin-remove-bottom" id="location-<%= dev.iddev %>"><%= dev.location %></h4>
                             <% if (dev.status.event === "sleep") { %>
+                                <% if (!stream[dev.iddev].live) { %>
+                                    <div class="uk-card-badge uk-label uk-button openlive" devid="<%= dev.iddev %>" style="background: #444;">Archive</div>
+                                <% } %>
                                 <p class="uk-text-meta uk-margin-remove-top">Режим: Энергосбережение</p>
                             <% } else if (dev.status.event === "wakeup") { %>
                                 <% if (dev.stream && stream[dev.iddev].live) { %>
@@ -77,6 +80,7 @@
         <div id="modal-media-livestream" class="uk-flex-top" uk-modals>
             <div class="uk-modal-dialog " style="width: 640px;">
                 <button class="uk-modal-close-outside" type="button" uk-close></button>
+                <a href="#" uk-icon="icon: expand" class="livestream-fullscreen"></a>s
                 <video uk-video muted id="livestream"></video>
                 <div class="uk-overlay uk-overlay-default uk-position-top" style="padding:8px 0px 8px 30px;background:rgba(255,255,255,.4);">
                     <p>
@@ -87,7 +91,6 @@
                     </p>
                 </div>
                 <div uk-spinner class="livestream-spinner"></div>
-                <a href="#" uk-icon="icon: expand" class="livestream-fullscreen"></a>
             </div>
         </div>
 
