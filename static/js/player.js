@@ -21,10 +21,12 @@ const PlayerInit = (manifestURL) => {
   player.on(dashjs.MediaPlayer.events['CAN_PLAY'], () => {
     if (streams[devIDStream]) {
       if (streams[devIDStream].live) {
+        clearInterval(labelAnimateTimer);
         labelAnimateTimer = setInterval(labelAnimate, 1000);
       } else {
         $('#livestream').attr('controls', "");
       }
+      clearInterval(streamTimeTimer);
       streamTimeTimer = setInterval(() => {
         let streamPlaybackTime = new Date(streams[devIDStream].date);
         streamPlaybackTime.setSeconds(streamPlaybackTime.getSeconds() + player.time());
