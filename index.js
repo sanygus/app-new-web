@@ -75,6 +75,5 @@ app.get('/static/stream/:devid/manifest.mpd', function(req, res) {
 });
 
 app.use('/static', express.static(__dirname + '/static'));
-app.use('/photos', express.static(photosdir));
 
 app.listen(5000);
