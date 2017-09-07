@@ -7,7 +7,7 @@ const db = require('./db');
 const async = require('async');
 const mpdConverter = require('./mpd-converter');
 require("date-format-lite");
-const photosdir = __dirname + '/../app-new/photos';
+const photosdir = __dirname + '/static/photos';
 let state = [];
 
 //express.static.mime.define({'application/xml': ['mpd']});
