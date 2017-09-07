@@ -6,7 +6,7 @@ tmpsensors = tmpsensors.map((sensor) => {
     if (sensor.charge) { sensor.charge = Math.round(sensor.charge.toFixed(2) * 100) }
     sensor.imageValue = 1;
     let imglink = tmpfiles[sensor.dev].filter((f) => {
-        return f.indexOf(moment(sensor.date).format('YYYY-MM-DDTHH-mm').substring(0, 15)) == 0 
+        return f.indexOf(moment(sensor.date).format('YYYY-MM-DD-HH-mm').substring(0, 15)) == 0 
     })[0];
     if (imglink) {
         sensor.image = '/static/photos/' + sensor.dev + '/' + imglink;
