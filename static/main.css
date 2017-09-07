@@ -15,7 +15,7 @@ body {
 }
 #livestream {
   width: 1280px;
-  height: 480px;
+  min-height: 300px;
 }
 .livestream-spinner {
   position: absolute;
@@ -44,7 +44,7 @@ body {
 .modal-centered {
   width:1280px;
   top:50%;
-  transform: translate(0, -50%);
+  transform: translate(0, -50%) !important;
 }
 .video-overlay {
   padding:8px 0px 8px 30px;
