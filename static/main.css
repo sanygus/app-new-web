@@ -44,7 +44,7 @@ body {
 .modal-centered {
   width:1280px;
   top:50%;
-  transform: translate(0, -50%) !important;
+  transform: translate(0, -55%) !important;
 }
 .video-overlay {
   padding:8px 0px 8px 30px;
