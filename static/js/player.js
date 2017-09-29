@@ -1,85 +1,48 @@
-let player;
-let devIDStream;
-const PlayerInit = (manifestURL) => {
-  const errorHandler = (/*error*/) => {
-    PlayerReset();
-    console.log('playing error, restarting');
-    setTimeout(() => {
-      if ($('#modal-media-livestream').css('display') === 'block') {
-        PlayerInit(manifestURL);
-      }
-    }, 2000);
+UIkit.modal($("#modal-media-video")).show();
+const player = dashjs.MediaPlayer().create();
+player.getDebug().setLogToBrowserConsole(false);
+player.initialize(document.querySelector("#video-container"), "/static/stream/1/manifest.mpd", true);
+
+const getStreamState = () => {
+  if (devicesID.length > 0) {
+    fetch(`/stream/state/${devicesID.join(',')}`)
+      .then((r) => { return r.json() })
+      .then((state) => {
+        for (let dev in state) {
+          renderVCDev(dev, state[dev]);
+        }
+      });
   }
-  player = dashjs.MediaPlayer().create();
-  player.getDebug().setLogToBrowserConsole(false);
-  player.initialize(document.getElementById('livestream'), manifestURL, true);
-  player.on(dashjs.MediaPlayer.events['ERROR'], errorHandler);
-  player.on(dashjs.MediaPlayer.events['PLAYBACK_ERROR'], (e) => {
-    $( ".livestream-spinner" ).fadeIn(1000);
-    errorHandler(e);
-  });
-  player.on(dashjs.MediaPlayer.events['CAN_PLAY'], () => {
-    if (streams[devIDStream]) {
-      if (streams[devIDStream].live) {
-        clearInterval(labelAnimateTimer);
-        labelAnimateTimer = setInterval(labelAnimate, 1000);
-      } else {
-        $('#livestream').attr('controls', "");
-      }
-      clearInterval(streamTimeTimer);
-      streamTimeTimer = setInterval(() => {
-        let streamPlaybackTime = new Date(streams[devIDStream].date);
-        streamPlaybackTime.setSeconds(streamPlaybackTime.getSeconds() + player.time());
-        $( "#livestream-time" ).text(streamPlaybackTime.toLocaleTimeString());
-      }, 1000);
-      $( ".livestream-spinner" ).fadeOut(1000);
-    }
-  });
-  player.on(dashjs.MediaPlayer.events['PLAYBACK_PLAYING'], () => {
-
-  });
-  player.on(dashjs.MediaPlayer.events['PLAYBACK_PAUSED'], () => {
-    clearInterval(labelAnimateTimer);
-    clearInterval(streamTimeTimer);
-  });
-}
-const PlayerReset = () => {
-  setTimeout(() => {
-    if (player) {
-      player.pause();
-      player.reset();
-      player = null;
-    }
-  }, 10);
 }
 
-$( ".openlive" ).click(function () {
-  devIDStream = $( this ).attr("devid");
-  $( "#livestream-location" ).text($( "#location-" + devIDStream ).text());
-  UIkit.modal($( "#modal-media-livestream" )).show();
-  PlayerInit("/static/stream/" + devIDStream + "/manifest.mpd");
-});
+const renderVCDev = (devid, state) => {
+  if (typeof(state[dev]) === "string") {
+    console.error(state[dev]);//Извините, произошла ошибка. Попробуйте позднее
+  } else {
+    let stateString = "";
+    switch(state[dev]) {
+      //case 0: break;//to default
+      case 1: stateString = "Ожидание включения";/*TO - загружаемся */ break;
+      case 2: stateString = "Устройство включено, ждём запуск потока"; break;
+      case 3: /*video poster*/ break;
+      default: stateString = "Отключено. Есть архив";
 
-$( "#modal-media-livestream" ).on('hide.uk.modal', function () {
-  PlayerReset();
-  $( ".livestream-spinner" ).fadeIn(2000);
-  clearInterval(labelAnimateTimer);
-  clearInterval(streamTimeTimer);
-  $( "#livestream-label" ).animate({opacity: 0}, 1);
-  $( "#livestream-time" ).text('');
-  if ($('#livestream').attr('controls')) {
-    $('#livestream').removeAttr('controls');
+        break;
+    }
+
+
   }
-});
-
-let labelState = true;
-let labelAnimateTimer;
-const labelAnimate = () => {
-  $( "#livestream-label" ).animate({opacity: labelState ? 0.4 : 1}, 1000);
-  labelState = !labelState;
 }
-let streamTimeTimer;
 
-$( ".livestream-fullscreen" ).click(() => {
-  document.getElementById('livestream').webkitEnterFullScreen();
-});
+
+const a = `
+                        <div class="uk-transition-fade uk-position-cover uk-position-medium uk-overlay uk-overlay-default uk-text-center">
+                            <button class="uk-button uk-button-danger uk-button-large uk-margin-top uk-margin-bottom">
+                                <span uk-icon="icon: video-camera;ratio: 1.5"></span>
+                                Онлайн видео
+                            </button>
+                            <button class="uk-button uk-button-secondary uk-button-small uk-margin-top uk-margin-bottom">
+                                <span uk-icon="icon: play-circle;"></span>
+                                Последний сеанc
+                            </button>
+                        </div>`

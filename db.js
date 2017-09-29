@@ -8,8 +8,8 @@ MongoClient.connect('mongodb://localhost:27017/exapp', function(err, dblink) {
   db = dblink;
 });
 
-module.exports.getSensors = (callback) => {
-  db.collection('sensors').find({}, { _id: 0 }).sort({ "resDate": 1 }).toArray(callback);
+module.exports.getSensors = (devid, callback) => {
+  db.collection('sensors').find({ devid }, { _id: 0, devid: false }).sort({ "date": 1 }).limit(100).toArray(callback);
 }
 
 module.exports.getStream = (callback) => {

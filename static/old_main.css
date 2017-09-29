@@ -1,0 +1,52 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
+.chartdiv {
+  width:850px;
+  height:500px;
+  padding-top:20px;
+}
+#periodSelector {
+  position:fixed;
+  width:170px;
+  height:400px;
+  bottom:50px;
+  right:10px;
+}
+#livestream {
+  width: 1280px;
+  min-height: 300px;
+}
+.livestream-spinner {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+}
+.livestream-spinner > svg {
+  width: 50px;
+  height: 50px;
+}
+#livestream-label {
+  position:absolute;
+  right:20px;
+  opacity:0;
+}
+.livestream-fullscreen {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+.modal-centered {
+  width:1280px;
+  top:50%;
+  transform: translate(0, -55%) !important;
+}
+.video-overlay {
+  padding:8px 0px 8px 30px;
+  background:rgba(255,255,255,.4);
+}

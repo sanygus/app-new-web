@@ -6,47 +6,61 @@ const fs = require('fs');
 const db = require('./db');
 const async = require('async');
 const mpdConverter = require('./mpd-converter');
-require("date-format-lite");
+const stream = require('./stream');
+
 const photosdir = __dirname + '/static/photos';
-let state = [];
 
+app.use(cors());
 //express.static.mime.define({'application/xml': ['mpd']});
-app.use(cors({ origin: true }));
-
-app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
-  async.parallel({
-      sensors: db.getSensors,
+  res.sendFile(__dirname + '/html/index.html');
+});
+
+app.get('/getdata/:devid', (req, res) => {
+  const devid = parseInt(req.params.devid);
+  async.parallel(
+    {
+      sensors: (callback) => {
+        db.getSensors(devid, callback);
+      },
       files: (callback) => {
-        fs.readdir(photosdir, (err, devDirs) => {
-          const files = {};
-          async.each(devDirs, (devDir, cbDevDir) => {
-            fs.readdir(`${photosdir}/${devDir}`, (err, filesList) => {
-              files[devDir] = filesList.sort().reverse();
-              cbDevDir(err);
-            });
-          }, (err) => {
-            callback(err, files);
-          });
+        fs.readdir(`${photosdir}/${devid}`, (err, filesarr) => {
+          if (filesarr) { filesarr.sort(); }
+          callback(err, filesarr);
         });
       },
-      stream: db.getStream,
+      /*stream: (callback) => {
+
+      }*/
     },
     (err, results) => {
-      Object.assign(results, { state });
-      res.render('index', results);
+      res.type('application/json').status(200).send(results);
     }
   );
 });
 
+// get start stream
+
+/*let lastGetState = null;
 const getState = () => {
+  if ((new Date() - lastGetState) > 2000) {
+    //get
+    request('http://geoworks.pro:3000/state', (error, resp, body) => {
+      if (resp && resp.statusCode === 200) {
+        try {
+          newstate.push(...JSON.parse(body));
+        } catch(e) {}
+      }
+    });
+    lastGetState = new Date();
+  } else {
+
+  }
   request('http://geoworks.pro:3000/state', (error, resp, body) => {
     if (resp && resp.statusCode === 200) {
       const newstate = [];
-      try {
-        newstate.push(...JSON.parse(body));
-      } catch(e) {}
+
       async.each(newstate, (dev, callback) => {
         if (dev.status.event === "wakeup") {
           request(`http://geoworks.pro:3000/${dev.iddev}/diag`, (error, resp, body) => {
@@ -61,13 +75,24 @@ const getState = () => {
         state = [];
         state.push(...newstate);
       });
-    }/* else {}*/
+    } else {}
   });
 }
 setInterval(getState, 15 * 60000);
-getState();
+getState();*/
 
-app.get('/static/stream/:devid/manifest.mpd', function(req, res) {
+app.get('/stream/start/:devid', (req, res) => {
+  const devid = parseInt(req.params.devid);
+  stream.start(devid);
+  res.type('application/json').status(200).send({ ok: true });
+});
+
+app.get('/stream/state/:devsid', (req, res) => {
+  const devsid = req.params.devsid.split(',').map((dev) => parseInt(dev));
+  res.type('application/json').status(200).send(stream.state(devsid));
+});
+
+app.get('/static/stream/:devid/manifest.mpd', (req, res) => {
   res.setHeader('Content-Type', 'application/xml');
   mpdConverter(`static/stream/${req.params.devid}/manifest.mpd`, (err, data) => {
     res.end(data);
