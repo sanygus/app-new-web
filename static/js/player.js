@@ -12,6 +12,7 @@ const getStreamState = () => {
         for (let dev in state) {
           renderVCDev(parseInt(dev), state[dev]);
         }
+        //TODO: if all is 0, reload after TO
       });
   }
 }
@@ -89,13 +90,22 @@ const renderVCDev = (devid, state) => {//devid is int
           console.log("видео готово");
 
           setTimeout(() => {
-            UIkit.modal.confirm('Трансляция будет завершена через несколько секунд. Вы желаете продолжить транслцию?').then(() => {
+            UIkit.modal.confirm('Трансляция будет завершена через несколько секунд. Вы желаете продолжить трансляцию?').then(() => {
               fetch(`http://geoworks.pro:3000/${devid}/nosleep`).then((r) => {
                 if (r.status === 200) { UIkit.notification("Трансляция поддержана", {status:'success'}); }
                 else { UIkit.notification("Не удалось поддержать трансляцию", {status:'warning'}); }
               });
             }, () => {});
           }, 330000);//TODO: reinit after self
+
+          if (prevState[devid] < 5) {
+            setTimeout(() => {
+              playerInit(devid);
+            }, 39000);
+          } else if (prevState[devid] === undefined) {
+            playerInit(devid);
+          }
+          //setTimeout();//playerInit
         }
         setTimeout(getStreamState, 30000);
         break;
@@ -151,35 +161,28 @@ const renderStateTemplate = (devBlk, tmpl) => {
 
 const playerInit = (devid) => {
   if (players[devid]) {
+    $(".streamLoadSpinner").show(1);
     players[devid].reset();
   }
   const player = dashjs.MediaPlayer().create();
   player.getDebug().setLogToBrowserConsole(false);
-  try {
-    player.initialize(
-      $("#device-" + devid + "-block").find("#videoContainer")[0],
-      `/static/stream/${devid}/manifest.mpd`,
-      true
-    );
-  } catch (e) {
-    setTimeout(() => { playerInit(devid); }, 3000);
-    console.log('catch, retry');
-  }
+  player.initialize(
+    $("#device-" + devid + "-block").find("#videoContainer")[0],
+    `/static/stream/${devid}/manifest.mpd`,
+    true
+  );
   //player.on(dashjs.MediaPlayer.events['CAN_PLAY'], console.log);
   player.on(dashjs.MediaPlayer.events['PLAYBACK_PLAYING'], () => {
     if (player.isDynamic()) { liveLabelAnimate(devid); }
     $(".streamLoadSpinner").hide(500);
+    playingCheck(devid);
   });
-  //player.on(dashjs.MediaPlayer.events['PLAYBACK_PAUSED'], console.log);
+  player.on(dashjs.MediaPlayer.events['PLAYBACK_PAUSED'], console.log);
   player.on(dashjs.MediaPlayer.events['ERROR'], () => {
     setTimeout(() => { playerInit(devid); }, 3000);
-    $(".streamLoadSpinner").show(500);
-    console.log('player error, retry');
   });
   player.on(dashjs.MediaPlayer.events['PLAYBACK_ERROR'], () => {
     setTimeout(() => { playerInit(devid); }, 3000);
-    $(".streamLoadSpinner").show(500);
-    console.log('playback error, retry');
   });
 
   players[devid] = player;
@@ -198,5 +201,19 @@ const liveLabelAnimate = (devid) => {
         else { elem.animate({opacity: 0}, 500); }
       });
     });
+  }
+}
+
+const playingCheck = (devid) => {
+  if (players[devid]) {
+    if (players[devid].lastCheckTime && (players[devid].time() === players[devid].lastCheckTime)) {
+      playerInit(devid);
+      console.log('reinit');
+    } else {
+      setTimeout(() => {
+        playingCheck(devid);
+      }, 2000);
+    }
+    players[devid].lastCheckTime = players[devid].time();
   }
 }

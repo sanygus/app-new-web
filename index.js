@@ -30,56 +30,13 @@ app.get('/getdata/:devid', (req, res) => {
           callback(err, filesarr);
         });
       },
-      /*stream: (callback) => {
-
-      }*/
     },
     (err, results) => {
+      if (err) { console.log(err); }
       res.type('application/json').status(200).send(results);
     }
   );
 });
-
-// get start stream
-
-/*let lastGetState = null;
-const getState = () => {
-  if ((new Date() - lastGetState) > 2000) {
-    //get
-    request('http://geoworks.pro:3000/state', (error, resp, body) => {
-      if (resp && resp.statusCode === 200) {
-        try {
-          newstate.push(...JSON.parse(body));
-        } catch(e) {}
-      }
-    });
-    lastGetState = new Date();
-  } else {
-
-  }
-  request('http://geoworks.pro:3000/state', (error, resp, body) => {
-    if (resp && resp.statusCode === 200) {
-      const newstate = [];
-
-      async.each(newstate, (dev, callback) => {
-        if (dev.status.event === "wakeup") {
-          request(`http://geoworks.pro:3000/${dev.iddev}/diag`, (error, resp, body) => {
-            const { state: devstate } = JSON.parse(body);
-            dev.stream = devstate === "streaming Video";
-            callback();
-          });
-        } else {
-          callback();
-        }
-      }, () => {//end each
-        state = [];
-        state.push(...newstate);
-      });
-    } else {}
-  });
-}
-setInterval(getState, 15 * 60000);
-getState();*/
 
 app.get('/stream/start/:devid', (req, res) => {
   const devid = parseInt(req.params.devid);

@@ -27,6 +27,7 @@ $( document ).ready(() => {
     getState((devsState) => {
       $( "#dataContainer" ).html(ejs.render(tmpl, { devs: devsState }));
       renderData(devsState);
+      setTimeout(getStreamState, 2000);
     });
   });
 });
