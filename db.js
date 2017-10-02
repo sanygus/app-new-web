@@ -12,7 +12,7 @@ module.exports.getSensors = (devid, callback) => {
   db.collection('sensors').find({ devid }, { _id: 0, devid: false }).sort({ "date": 1 }).limit(100).toArray(callback);
 }
 
-module.exports.getStream = (callback) => {
+/*module.exports.getStream = (callback) => {
   db.collection('stream').find({}, { _id: 0 }).toArray((err, data) => {
     const obj = {};
     let tdevid;
@@ -25,4 +25,4 @@ module.exports.getStream = (callback) => {
     }
     callback(err, obj);
   });
-}
+}*/

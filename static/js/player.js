@@ -1,48 +1,202 @@
-UIkit.modal($("#modal-media-video")).show();
-const player = dashjs.MediaPlayer().create();
-player.getDebug().setLogToBrowserConsole(false);
-player.initialize(document.querySelector("#video-container"), "/static/stream/1/manifest.mpd", true);
+/*UIkit.modal($("#modal-media-video")).show();*/
+
+const players = {};
+const prevState = {};
 
 const getStreamState = () => {
   if (devicesID.length > 0) {
     fetch(`/stream/state/${devicesID.join(',')}`)
       .then((r) => { return r.json() })
       .then((state) => {
+        console.log(state);
         for (let dev in state) {
-          renderVCDev(dev, state[dev]);
+          renderVCDev(parseInt(dev), state[dev]);
         }
       });
   }
 }
 
-const renderVCDev = (devid, state) => {
-  if (typeof(state[dev]) === "string") {
-    console.error(state[dev]);//Извините, произошла ошибка. Попробуйте позднее
+const renderVCDev = (devid, state) => {//devid is int
+  if (typeof(state) === "string") {
+    console.error(`dev ${devid} - ${state}`);
+    UIkit.notification("Извините, включение временно недоступно. Попробуйте позднее", {status:'warning'});//Извините, произошла ошибка. Попробуйте позднее
   } else {
-    let stateString = "";
-    switch(state[dev]) {
-      //case 0: break;//to default
-      case 1: stateString = "Ожидание включения";/*TO - загружаемся */ break;
-      case 2: stateString = "Устройство включено, ждём запуск потока"; break;
-      case 3: /*video poster*/ break;
-      default: stateString = "Отключено. Есть архив";
-
+    const deviceBlock = $("#device-" + devid + "-block");
+    switch(state) {
+      case 0: renderStateTemplate(deviceBlock, "init"); break;
+      case 1:
+        if (prevState[devid] !== 1) {
+          renderStateTemplate(deviceBlock, "load");
+          deviceBlock.find('.dev-img').css("filter", "blur(4px)");
+          deviceBlock.find('#streamProgress')[0].value = 1/6;
+          deviceBlock.find('#streamProgressValue').html("1/6");
+          deviceBlock.find('#streamLoadState').html("Ожидание включения");
+          setTimeout(() => {
+            if (prevState[devid] === 1) {
+              deviceBlock.find('#streamProgress')[0].value = 2/6;
+              deviceBlock.find('#streamProgressValue').html("2/6");
+              deviceBlock.find('#streamLoadState').html("Загрузка компьютера");
+            }
+          }, 35000);
+        }
+        setTimeout(getStreamState, 5000);
         break;
+      case 2:
+        if (prevState[devid] !== 2) {
+          if (prevState[devid] !== 1) {
+            renderStateTemplate(deviceBlock, "load");
+            deviceBlock.find('.dev-img').css("filter", "blur(4px)");
+          } else { console.log('prev is first'); console.log(prevState[devid]); }
+          deviceBlock.find('#streamProgress')[0].value = 3/6;
+          deviceBlock.find('#streamProgressValue').html("3/6");
+          deviceBlock.find('#streamLoadState').html("Включено, инициализация камеры");
+          UIkit.notification("Устройство включено", {status:'success'});
+        }
+        setTimeout(getStreamState, 3000);
+        break;
+      case 3:
+        if (prevState[devid] !== 3) {
+          renderStateTemplate(deviceBlock, "preview");
+          deviceBlock.find('#streamProgress')[0].value = 4/6;
+          deviceBlock.find('#streamProgressValue').html("4/6");
+          deviceBlock.find('#streamLoadState').html("Получено изображение, инициализация потока");
+          deviceBlock.find('.dev-img').css("filter", '');
+          deviceBlock.find('.dev-img').attr('src',`/static/photos/${devid}/beforeStream.jpg?${Math.random()}`);
+        }
+        setTimeout(getStreamState, 1000);
+        break;
+      case 4:
+        if (prevState[devid] !== 4) {
+          if (prevState[devid] !== 3) {
+            renderStateTemplate(deviceBlock, "preview");
+            deviceBlock.find('.dev-img').css("filter", '');
+            deviceBlock.find('.dev-img').attr('src',`/static/photos/${devid}/beforeStream.jpg?${Math.random()}`);
+          }
+          deviceBlock.find('#streamProgress')[0].value = 5/6;
+          deviceBlock.find('#streamProgressValue').html("5/6");
+          deviceBlock.find('#streamLoadState').html("Инициализация конвертера");
+        }
+        setTimeout(getStreamState, 1000);
+        break;
+      case 5:
+        if (prevState[devid] !== 5) {
+          if (prevState[devid] !== 3 && prevState[devid] !== 4) {
+            renderStateTemplate(deviceBlock, "preview");
+            deviceBlock.find('.dev-img').css("filter", '');
+            deviceBlock.find('.dev-img').attr('src',`/static/photos/${devid}/beforeStream.jpg?${Math.random()}`);
+          }
+          renderStateTemplate(deviceBlock, "video");
+          console.log("видео готово");
+
+          setTimeout(() => {
+            UIkit.modal.confirm('Трансляция будет завершена через несколько секунд. Вы желаете продолжить транслцию?').then(() => {
+              fetch(`http://geoworks.pro:3000/${devid}/nosleep`).then((r) => {
+                if (r.status === 200) { UIkit.notification("Трансляция поддержана", {status:'success'}); }
+                else { UIkit.notification("Не удалось поддержать трансляцию", {status:'warning'}); }
+              });
+            }, () => {});
+          }, 330000);//TODO: reinit after self
+        }
+        setTimeout(getStreamState, 30000);
+        break;
+      default: console.log(`uncertain state dev ${devid}`); break;
     }
-
-
+    prevState[devid] = state;
   }
 }
 
 
-const a = `
-                        <div class="uk-transition-fade uk-position-cover uk-position-medium uk-overlay uk-overlay-default uk-text-center">
-                            <button class="uk-button uk-button-danger uk-button-large uk-margin-top uk-margin-bottom">
-                                <span uk-icon="icon: video-camera;ratio: 1.5"></span>
-                                Онлайн видео
-                            </button>
-                            <button class="uk-button uk-button-secondary uk-button-small uk-margin-top uk-margin-bottom">
-                                <span uk-icon="icon: play-circle;"></span>
-                                Последний сеанc
-                            </button>
-                        </div>`
+const getStateTemplate = {
+  "init": () => {
+    return `<div class="uk-transition-fade uk-position-cover uk-position-medium uk-overlay uk-overlay-default uk-text-center">
+              <button class="uk-button uk-button-danger uk-button-large uk-margin-top uk-margin-bottom">
+                <span uk-icon="icon: video-camera;ratio: 1.5"></span>
+                  Онлайн видео
+              </button>
+              <button class="uk-button uk-button-secondary uk-button-small uk-margin-top uk-margin-bottom">
+                <span uk-icon="icon: play-circle;"></span>
+                  Последний сеанc
+              </button>
+            </div>`
+  },
+  "load": () => {
+    return `<div class="uk-position-cover uk-overlay uk-padding-remove uk-overlay-default">
+              <progress class="uk-progress" id="streamProgress" min="0" max="1"></progress>
+              <div id="streamProgressValue" class="uk-text-center"></div>
+              <div uk-spinner class="uk-position-center streamLoadSpinner"></div>
+              <div id="streamLoadState" class="uk-position-center" style="transform:translate(-50%,150%);"></div>
+            </div>`
+  },
+  "preview": () => {
+    return `<div class="uk-position-cover uk-overlay uk-padding-remove">
+              <progress class="uk-progress" id="streamProgress" min="0" max="1"></progress>
+              <div id="streamProgressValue" class="uk-text-center"></div>
+              <div uk-spinner class="uk-position-center streamLoadSpinner"></div>
+              <div id="streamLoadState" class="uk-position-center" style="transform:translate(-50%,150%);"></div>
+            </div>`
+  },
+  "video": () => {
+    return `<div class="uk-position-cover uk-overlay uk-padding-remove">
+              <div class="uk-position-top-right" id="streamLiveLabel" style="opacity:0;"><span class="uk-label uk-label-danger">LIVE</span></div>
+              <video uk-video id="videoContainer"></video>
+              <div uk-spinner class="uk-position-center streamLoadSpinner"></div>
+              <div class="uk-position-bottom-right"><a href="#" uk-icon="icon: expand" id="expandVideo"></a></div>
+            </div>`
+  },
+}
+
+const renderStateTemplate = (devBlk, tmpl) => {
+  devBlk.find('#atopimg').html(getStateTemplate[tmpl]());
+}
+
+const playerInit = (devid) => {
+  if (players[devid]) {
+    players[devid].reset();
+  }
+  const player = dashjs.MediaPlayer().create();
+  player.getDebug().setLogToBrowserConsole(false);
+  try {
+    player.initialize(
+      $("#device-" + devid + "-block").find("#videoContainer")[0],
+      `/static/stream/${devid}/manifest.mpd`,
+      true
+    );
+  } catch (e) {
+    setTimeout(() => { playerInit(devid); }, 3000);
+    console.log('catch, retry');
+  }
+  //player.on(dashjs.MediaPlayer.events['CAN_PLAY'], console.log);
+  player.on(dashjs.MediaPlayer.events['PLAYBACK_PLAYING'], () => {
+    if (player.isDynamic()) { liveLabelAnimate(devid); }
+    $(".streamLoadSpinner").hide(500);
+  });
+  //player.on(dashjs.MediaPlayer.events['PLAYBACK_PAUSED'], console.log);
+  player.on(dashjs.MediaPlayer.events['ERROR'], () => {
+    setTimeout(() => { playerInit(devid); }, 3000);
+    $(".streamLoadSpinner").show(500);
+    console.log('player error, retry');
+  });
+  player.on(dashjs.MediaPlayer.events['PLAYBACK_ERROR'], () => {
+    setTimeout(() => { playerInit(devid); }, 3000);
+    $(".streamLoadSpinner").show(500);
+    console.log('playback error, retry');
+  });
+
+  players[devid] = player;
+
+  $("#device-" + devid + "-block").find("#expandVideo").click(() => {
+    $("#device-" + devid + "-block").find("#videoContainer")[0].webkitRequestFullScreen();
+  });
+}
+
+const liveLabelAnimate = (devid) => {
+  const elem = $("#device-" + devid + "-block").find("#streamLiveLabel");
+  if (elem[0]) {
+    elem.animate({opacity: 1}, 1000, () => {
+      elem.animate({opacity: 0.5}, 1000, () => {
+        if (!players[devid].isPaused()) { liveLabelAnimate(devid); }
+        else { elem.animate({opacity: 0}, 500); }
+      });
+    });
+  }
+}

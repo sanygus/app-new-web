@@ -12,8 +12,10 @@ const drawChart = (container, data) => {
         nearFileDate = filedate;
       }
     }
-    sens.file = '/static/photos/4/' + nearFileDate.toJSON().replace('.000Z', '.jpg');
-    sens.fileValue = 0;
+    if (nearFileDate) {
+      sens.file = '/static/photos/4/' + nearFileDate.toJSON().replace('.000Z', '.jpg');
+      sens.fileValue = 0;
+    }
   }
   console.log(data);
   AmCharts.makeChart(container, {
@@ -52,7 +54,7 @@ const drawChart = (container, data) => {
         "hideBulletsCount": 30,
         "title": "Температура",
         "valueField": "temp",
-        "type": "line",
+        "type": "smoothedLine",
         "fillAlphas": 0,
     }, {
         "valueAxis": "vpress",

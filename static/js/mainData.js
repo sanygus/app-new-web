@@ -65,8 +65,8 @@ const renderData = (devsState) => {
           block.find(".dev-sens-press").html(lastSens.press);
           block.find(".dev-sens-date").html(moment(lastSens.date).format("lll"));
           drawChart(block.find(".chartdiv")[0], data);
-          $( "#globalLoader" ).hide(1000);
         }
+        $( "#globalLoader" ).hide(1000);
       });
     } else {
           //change

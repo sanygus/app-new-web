@@ -20,19 +20,22 @@ module.exports.start = async (devid) => {
       }
       if (device.up === false) {
         state[devid] = 1;//sleeping
-        await wake(devid);
+        await wake(devid);//39s+30s+25s=94s
       }
       state[devid] = 2;//waked
+
       console.log('waked, try get photo');
-      await getPhoto(devid);
-      console.log('photo ok, starting stream');
+      await getPhoto(devid);//7s
       state[devid] = 3;//cam working, photo
-      await startStreamOnDev(devid);
+
+      console.log('photo ok, starting stream');
+      await startStreamOnDev(devid);//0.1s
       state[devid] = 4;//dev stream started
+
       console.log('ok, start converter');
-      await dashConv.start(devid);
-      console.log('converter started');
+      await dashConv.start(devid);//3s
       state[devid] = 5;//conv started
+      console.log('converter started');
     } else {
       throw new Error('no dev');
     }
@@ -102,7 +105,7 @@ const dashConv = {
       const p = spawn('ffmpeg', [
         '-i',
         //'rtsp://172.30.0.3' + devid + ':8554/unicast',
-        'rtsp://10.10.10.61:8554/unicast',
+        'rtsp://192.168.88.20:8554/unicast',
         '-f',
         'segment',
         '-map',
@@ -122,12 +125,12 @@ const dashConv = {
       ], {
         cwd: `${streamDir}/${devid}`
       });
-      /*p.stdout.on('data', (data) => {
+      p.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
       });
       p.stderr.on('data', (data) => {
         console.log(`stderr: ${data}`);
-      });*/
+      });
       p.on('error', (err) => {
         procErr = new Error(`Failed to start subprocess ${err}`);
         console.log(procErr.message);
@@ -149,10 +152,10 @@ const dashConv = {
       });
       processes[devid] = p;
       setTimeout(() => {
+        console.log('checking');
         if (processes[devid] && !processes[devid].killed) {
           resolve();
         } else {
-          console.log('checking');
           reject(procErr);
         }
       }, 2000);
