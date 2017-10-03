@@ -51,6 +51,7 @@ module.exports.state = (devsid) => {
   for (let devid of devsid) {
     if (state[devid] === undefined) { state[devid] = 0; }
     result[devid] = state[devid];
+    if (typeof state[devid] === "string") { state[devid] = 0; }//tempfix
   }
   return result;
 };
