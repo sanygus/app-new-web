@@ -2,12 +2,15 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 .chartdiv {
-  height: 250px;
-  margin-top: 150px;
+  height: 260px;
+  margin-top: 120px;
+  overflow: visible !important;
+}
+.amcharts-chart-div {
+  overflow: visible !important;
 }
 .chartdiv svg {
   overflow: visible;
-  /*margin-top: 50px;*/
 }
 .streamLoadSpinner svg {
   width: 50px;

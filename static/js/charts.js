@@ -1,8 +1,7 @@
 const drawChart = (container, data) => {
   container.innerHTML = `<div uk-spinner></div>`;
+  //prepare sensors (add files)
   for (sens of data.sensors) {
-    //moment(file + '.000Z')
-    //sens.date
     const sensdate = new Date(sens.date);
     let filedate;
     let nearFileDate = null;
@@ -14,18 +13,21 @@ const drawChart = (container, data) => {
     }
     if (nearFileDate) {
       sens.file = '/static/photos/4/' + nearFileDate.toJSON().replace('.000Z', '.jpg');
-      sens.fileValue = 0;
+      sens.fileValue = 1;
     }
   }
+
   console.log(data);
+
+  //make chart
   AmCharts.makeChart(container, {
     "type": "serial",
     "theme": "light",
     "language": "ru",
     "legend": {
-        "useGraphSettings": true,
-        "labelWidth": 120,
-        "align": "center"
+      "useGraphSettings": true,
+      "labelWidth": 120,
+      "align": "center"
     },
     "dataProvider": data.sensors,
     "synchronizeGrid": true,
@@ -35,14 +37,20 @@ const drawChart = (container, data) => {
         "axisColor": "#FF6600",
         "axisThickness": 2,
         "axisAlpha": 1,
-        "position": "left"
+        "position": "left",
     }, {
         "id":"vpress",
         "axisColor": "#FCD202",
         "axisThickness": 2,
-        "offset": 50,
         "axisAlpha": 1,
-        "position": "left"
+        "position": "right",
+    }, {
+        "id":"vimg",
+        "labelsEnabled": false,
+        "maximum": 1,
+        "minimum": 0,
+        "axisAlpha": 0,
+        "gridAlpha": 0,
     }],
     "graphs": [{
         "valueAxis": "vtemp",
@@ -69,12 +77,12 @@ const drawChart = (container, data) => {
         "type": "line",
         "fillAlphas": 0
     }, {
-        //"valueAxis": "v4",
+        "valueAxis": "vimg",
         "bullet": "custom",
         "lineAlpha": 0,
         "showBalloon": false,
         "bulletSize": 80,
-        "bulletOffset": 50,
+        "bulletOffset": 110,
         "customBulletField": "file",
         "bulletBorderThickness": 1,
         "hideBulletsCount": 300,
@@ -84,11 +92,11 @@ const drawChart = (container, data) => {
         "stackable": false,
     }],
     "chartScrollbar": {
-        "scrollbarHeight":2,
+        "scrollbarHeight":10,
         "backgroundAlpha":0.1,
         "backgroundColor":"#888888",
         "selectedBackgroundColor":"#67b7dc",
-        "selectedBackgroundAlpha":1,
+        "selectedBackgroundAlpha":0.7,
     },
     "chartCursor": {
         "cursorPosition": "mouse",
@@ -104,11 +112,18 @@ const drawChart = (container, data) => {
         "minPeriod": "ss",
         "position": "top",
     },
-    /*"listeners": [{
+    "listeners": [{
         "event": "clickGraphItem",
         "method": function(event) {
-          openLB(event.item.dataContext);
+          const dc = event.item.dataContext;
+          const df = new Date(dc.file.substr(-23).replace('.jpg','.000Z'));
+          UIkit.lightboxPanel({ "items": [{ "source": dc.file, "caption": moment(df).format("LLL") }] }).show();
         }
-    }]*/
+    }, {
+        "event": "rendered",
+        "method": function(e) {
+          e.chart.zoomToIndexes(data.sensors.length - 10, data.sensors.length);
+        }
+    }]
   });
 }

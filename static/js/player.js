@@ -24,7 +24,18 @@ const renderVCDev = (devid, state) => {//devid is int
   } else {
     const deviceBlock = $("#device-" + devid + "-block");
     switch(state) {
-      case 0: renderStateTemplate(deviceBlock, "init"); break;
+      case 0:
+        if (prevState[devid] !== 0) {
+          renderStateTemplate(deviceBlock, "init");
+          deviceBlock.find(".startStreamButton").click(() => {
+            fetch(`/stream/start/${devid}`)
+              .then((r) => { return r.json() })
+              .then((resp) => {
+                if (resp.ok) { setTimeout(getStreamState, 1000); }
+              });
+          });
+        }
+        break;
       case 1:
         if (prevState[devid] !== 1) {
           renderStateTemplate(deviceBlock, "load");
@@ -87,7 +98,6 @@ const renderVCDev = (devid, state) => {//devid is int
             deviceBlock.find('.dev-img').attr('src',`/static/photos/${devid}/beforeStream.jpg?${Math.random()}`);
           }
           renderStateTemplate(deviceBlock, "video");
-          console.log("видео готово");
 
           setTimeout(() => {
             UIkit.modal.confirm('Трансляция будет завершена через несколько секунд. Вы желаете продолжить трансляцию?').then(() => {
@@ -99,8 +109,14 @@ const renderVCDev = (devid, state) => {//devid is int
           }, 330000);//TODO: reinit after self
 
           if (prevState[devid] < 5) {
+            deviceBlock.find("#streamLiveLabel").before(`<progress class="uk-progress" id="streamProgress" min="0" max="1"></progress>`);
+            let liveProgressTO = setInterval(() => {
+              deviceBlock.find("#streamProgress")[0].value += 0.01;
+            }, 39000 / 100);
             setTimeout(() => {
               playerInit(devid);
+              clearInterval(liveProgressTO);
+              deviceBlock.find("#streamProgress").remove();
             }, 39000);
           } else if (prevState[devid] === undefined) {
             playerInit(devid);
@@ -118,15 +134,17 @@ const renderVCDev = (devid, state) => {//devid is int
 
 const getStateTemplate = {
   "init": () => {
-    return `<div class="uk-transition-fade uk-position-cover uk-position-medium uk-overlay uk-overlay-default uk-text-center">
+    return `<div class="uk-transition-fade uk-position-cover uk-position-medium uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
               <button class="uk-button uk-button-danger uk-button-large uk-margin-top uk-margin-bottom">
                 <span uk-icon="icon: video-camera;ratio: 1.5"></span>
                   Онлайн видео
               </button>
-              <button class="uk-button uk-button-secondary uk-button-small uk-margin-top uk-margin-bottom">
-                <span uk-icon="icon: play-circle;"></span>
-                  Последний сеанc
-              </button>
+              <div uk-drop="mode: click;pos: top-center;">
+                <div class="uk-card uk-card-body uk-card-default uk-padding-small">
+                  <p>Вы готовы немного подождать?</p>
+                  <button class="uk-button uk-button-primary uk-button-small uk-width-1-1 startStreamButton">Да</button>
+                </div>
+              </div>
             </div>`
   },
   "load": () => {
@@ -205,7 +223,7 @@ const liveLabelAnimate = (devid) => {
 }
 
 const playingCheck = (devid) => {
-  if (players[devid]) {
+  if (players[devid] && players[devid].isReady()) {
     if (players[devid].lastCheckTime && (players[devid].time() === players[devid].lastCheckTime)) {
       playerInit(devid);
       console.log('reinit');
