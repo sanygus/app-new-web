@@ -104,8 +104,8 @@ const dashConv = {
       let procErr;
       const p = spawn('ffmpeg', [
         '-i',
-        //`rtsp://172.30.0.3${devid}:8554/unicast`,
-        'rtsp://192.168.88.20:8554/unicast',
+        `rtsp://172.30.0.3${devid}:8554/unicast`,
+        //'rtsp://192.168.88.20:8554/unicast',
         '-f',
         'segment',
         '-map',
