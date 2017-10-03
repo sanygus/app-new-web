@@ -34,13 +34,13 @@ const drawChart = (container, data) => {
     "fontFamily": "Roboto",
     "valueAxes": [{
         "id":"vtemp",
-        "axisColor": "#FF6600",
+        "axisColor": "#1e87f0",
         "axisThickness": 2,
         "axisAlpha": 1,
         "position": "left",
     }, {
         "id":"vpress",
-        "axisColor": "#FCD202",
+        "axisColor": "#f1d913",
         "axisThickness": 2,
         "axisAlpha": 1,
         "position": "right",
@@ -56,19 +56,19 @@ const drawChart = (container, data) => {
         "valueAxis": "vtemp",
         "balloonText": "[[value]] °C",
         "legendValueText": "[[value]] °C",
-        "lineColor": "#FF6600",
+        "lineColor": "#1e87f0",
         "bullet": "round",
         "bulletBorderThickness": 1,
         "hideBulletsCount": 30,
         "title": "Температура",
         "valueField": "temp",
-        "type": "smoothedLine",
+        "type": "line",
         "fillAlphas": 0,
     }, {
         "valueAxis": "vpress",
         "balloonText": "[[value]] мрс",
         "legendValueText": "[[value]] мрс",
-        "lineColor": "#FCD202",
+        "lineColor": "#f1d913",
         "bullet": "round",
         "bulletBorderThickness": 1,
         "hideBulletsCount": 30,
@@ -82,7 +82,7 @@ const drawChart = (container, data) => {
         "lineAlpha": 0,
         "showBalloon": false,
         "bulletSize": 80,
-        "bulletOffset": 110,
+        "bulletOffset": 0,
         "customBulletField": "file",
         "bulletBorderThickness": 1,
         "hideBulletsCount": 300,
@@ -123,6 +123,11 @@ const drawChart = (container, data) => {
         "event": "rendered",
         "method": function(e) {
           e.chart.zoomToIndexes(data.sensors.length - 10, data.sensors.length);
+        }
+    }, {
+        "event": "zoomed",
+        "method": function(e) {
+          $("g image[height='80']").attr("transform","translate(-40,-190)");
         }
     }]
   });
