@@ -73,4 +73,5 @@ const renderData = (devsState) => {
           //change
     }
   }
+  setTimeout(updateData, 60000);
 }
