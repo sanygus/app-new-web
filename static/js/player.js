@@ -49,7 +49,7 @@ const renderVCDev = (devid, state) => {//devid is int
               deviceBlock.find('#streamProgressValue').html("2/6");
               deviceBlock.find('#streamLoadState').html("Загрузка компьютера");
             }
-          }, 35000);
+          }, 39000);
         }
         setTimeout(getStreamState, 5000);
         break;

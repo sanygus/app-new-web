@@ -1,6 +1,4 @@
-const drawChart = (container, data) => {
-  container.innerHTML = `<div uk-spinner></div>`;
-  //prepare sensors (add files)
+const drawChart = (devid, data) => {
   for (sens of data.sensors) {
     const sensdate = new Date(sens.date);
     let filedate;
@@ -14,7 +12,7 @@ const drawChart = (container, data) => {
       }
     }
     if (nearFileDate) {
-      sens.file = '/static/photos/4/' + nearFileDate.toJSON().replace('.000Z', '.jpg');
+      sens.file = `/static/photos/${devid}/` + nearFileDate.toJSON().replace('.000Z', '.jpg');
       sens.fileValue = 1;
     }
   }
@@ -22,7 +20,7 @@ const drawChart = (container, data) => {
   console.log(data);
 
   //make chart
-  AmCharts.makeChart(container, {
+  AmCharts.makeChart($(`#device-${devid}-block`).find(".chartdiv")[0], {
     "type": "serial",
     "theme": "light",
     "language": "ru",
@@ -124,7 +122,7 @@ const drawChart = (container, data) => {
     }, {
         "event": "rendered",
         "method": function(e) {
-          e.chart.zoomToIndexes(data.sensors.length - 7, data.sensors.length);
+          e.chart.zoomToIndexes(data.sensors.length - 8, data.sensors.length);
         }
     }, {
         "event": "zoomed",
