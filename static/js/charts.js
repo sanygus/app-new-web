@@ -6,9 +6,11 @@ const drawChart = (container, data) => {
     let filedate;
     let nearFileDate = null;
     for (file of data.files) {
-      filedate = new Date(file.replace('.jpg', '.000Z'));
-      if (Math.abs(sensdate - filedate) < Math.abs(sensdate - nearFileDate)) {
-        nearFileDate = filedate;
+      if (file !== 'beforeStream.jpg') {
+        filedate = new Date(file.replace('.jpg', '.000Z'));
+        if (Math.abs(sensdate - filedate) < Math.abs(sensdate - nearFileDate)) {
+          nearFileDate = filedate;
+        }
       }
     }
     if (nearFileDate) {
