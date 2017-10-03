@@ -124,7 +124,7 @@ const drawChart = (container, data) => {
     }, {
         "event": "rendered",
         "method": function(e) {
-          e.chart.zoomToIndexes(data.sensors.length - 10, data.sensors.length);
+          e.chart.zoomToIndexes(data.sensors.length - 7, data.sensors.length);
         }
     }, {
         "event": "zoomed",
