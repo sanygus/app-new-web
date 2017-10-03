@@ -21,6 +21,8 @@ const renderVCDev = (devid, state) => {//devid is int
   if (typeof(state) === "string") {
     console.error(`dev ${devid} - ${state}`);
     UIkit.notification("Извините, включение временно недоступно. Попробуйте позднее", {status:'warning'});//Извините, произошла ошибка. Попробуйте позднее
+    renderStateTemplate($("#device-" + devid + "-block"), "init");
+    //setTimeout(getStreamState, 30000);
   } else {
     const deviceBlock = $("#device-" + devid + "-block");
     switch(state) {
@@ -35,6 +37,7 @@ const renderVCDev = (devid, state) => {//devid is int
               });
           });
         }
+        //setTimeout(getStreamState, 30000);
         break;
       case 1:
         if (prevState[devid] !== 1) {

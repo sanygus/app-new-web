@@ -8,41 +8,43 @@ const streamDir = __dirname + '/static/stream';
 const processes = {};
 
 module.exports.start = async (devid) => {
-  try {
-    state[devid] = 0;
-    const devices = await getDevsState();
-    const device = devices.filter((dev) => {
-      return dev.devid === devid;
-    })[0];
-    if (device) {
-      if (device.up === null) {
-        throw new Error('dev state is null');
+  if ((state[devid] === 0) || (state[devid] === undefined) || (typeof state[devid] === "string")) {
+    try {
+      state[devid] = 0;
+      const devices = await getDevsState();
+      const device = devices.filter((dev) => {
+        return dev.devid === devid;
+      })[0];
+      if (device) {
+        if (device.up === null) {
+          throw new Error('dev state is null');
+        }
+        if (device.up === false) {
+          state[devid] = 1;//sleeping
+          await wake(devid);//39s+30s+25s=94s
+        }
+        state[devid] = 2;//waked
+
+        console.log('waked, try get photo');
+        await getPhoto(devid);//7s
+        state[devid] = 3;//cam working, photo
+
+        console.log('photo ok, starting stream');
+        await startStreamOnDev(devid);//0.1s
+        state[devid] = 4;//dev stream started
+
+        console.log('ok, start converter');
+        await dashConv.start(devid);//3s
+        state[devid] = 5;//conv started
+        console.log('converter started');
+      } else {
+        throw new Error('no dev');
       }
-      if (device.up === false) {
-        state[devid] = 1;//sleeping
-        await wake(devid);//39s+30s+25s=94s
-      }
-      state[devid] = 2;//waked
-
-      console.log('waked, try get photo');
-      await getPhoto(devid);//7s
-      state[devid] = 3;//cam working, photo
-
-      console.log('photo ok, starting stream');
-      await startStreamOnDev(devid);//0.1s
-      state[devid] = 4;//dev stream started
-
-      console.log('ok, start converter');
-      await dashConv.start(devid);//3s
-      state[devid] = 5;//conv started
-      console.log('converter started');
-    } else {
-      throw new Error('no dev');
+    } catch (err) {
+      state[devid] = err.toString();
+      console.log(state[devid]);
+      //state[devid] = 0;
     }
-  } catch (err) {
-    state[devid] = err.toString();
-    console.log(state[devid]);
-    //state[devid] = 0;
   }
 }
 
