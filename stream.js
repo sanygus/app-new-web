@@ -75,7 +75,7 @@ const getPhoto = (deviceID) => {
   return new Promise((resolve, reject) => {
     request(`http://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
       if (resp.headers['content-type'] === 'image/jpeg') {
-        fs.writeFile(`${__dirname}/static/photos/${deviceID}/beforeStream.jpg`, body, 'binary', (err) => {
+        fs.writeFile(`${__dirname}/static/photos/beforeStream${deviceID}.jpg`, body, 'binary', (err) => {
           //if (err && err.code === 'ENOENT') { }
           resolve();
         });
