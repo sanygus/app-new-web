@@ -27,7 +27,14 @@ const drawChart = (devid, data) => {
     "legend": {
       "useGraphSettings": true,
       "labelWidth": 120,
-      "align": "center"
+      "align": "center",
+      "listeners": [ {
+          "event": "hideItem",
+          "method": bulletToTop
+       }, {
+          "event": "showItem",
+          "method": bulletToTop
+       } ]
     },
     "dataProvider": data.sensors,
     "synchronizeGrid": true,
@@ -126,9 +133,10 @@ const drawChart = (devid, data) => {
         }
     }, {
         "event": "zoomed",
-        "method": function(e) {
-          $("g image[height='80']").attr("transform","translate(-40,-190)");
-        }
+        "method": bulletToTop
     }]
   });
+}
+const bulletToTop = () => {
+  $("g image[height='80']").attr("transform","translate(-40,-190)");
 }
