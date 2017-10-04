@@ -21,6 +21,8 @@ const renderVCDev = (devid, state) => {//devid is int
   if (typeof(state) === "string") {
     console.error(`dev ${devid} - ${state}`);
     UIkit.notification("Извините, включение временно недоступно. Попробуйте позднее", {status:'warning'});//Извините, произошла ошибка. Попробуйте позднее
+    renderStateTemplate($("#device-" + devid + "-block"), "init");
+    //setTimeout(getStreamState, 30000);
   } else {
     const deviceBlock = $("#device-" + devid + "-block");
     switch(state) {
@@ -35,11 +37,12 @@ const renderVCDev = (devid, state) => {//devid is int
               });
           });
         }
+        //setTimeout(getStreamState, 30000);
         break;
       case 1:
         if (prevState[devid] !== 1) {
           renderStateTemplate(deviceBlock, "load");
-          deviceBlock.find('.dev-img').css("filter", "blur(4px)");
+          //deviceBlock.find('.dev-img').css("filter", "blur(4px)");
           deviceBlock.find('#streamProgress')[0].value = 1/6;
           deviceBlock.find('#streamProgressValue').html("1/6");
           deviceBlock.find('#streamLoadState').html("Ожидание включения");
@@ -57,7 +60,7 @@ const renderVCDev = (devid, state) => {//devid is int
         if (prevState[devid] !== 2) {
           if (prevState[devid] !== 1) {
             renderStateTemplate(deviceBlock, "load");
-            deviceBlock.find('.dev-img').css("filter", "blur(4px)");
+            //deviceBlock.find('.dev-img').css("filter", "blur(4px)");
           } else { console.log('prev is first'); console.log(prevState[devid]); }
           deviceBlock.find('#streamProgress')[0].value = 3/6;
           deviceBlock.find('#streamProgressValue').html("3/6");
@@ -72,8 +75,8 @@ const renderVCDev = (devid, state) => {//devid is int
           deviceBlock.find('#streamProgress')[0].value = 4/6;
           deviceBlock.find('#streamProgressValue').html("4/6");
           deviceBlock.find('#streamLoadState').html("Получено изображение, инициализация потока");
-          deviceBlock.find('.dev-img').css("filter", '');
-          deviceBlock.find('.dev-img').attr('src',`/static/photos/${devid}/beforeStream.jpg?${Math.random()}`);
+          //deviceBlock.find('.dev-img').css("filter", '');
+          deviceBlock.find('.dev-img').attr('src',`/static/photos/beforeStream${devid}.jpg?${Math.random()}`);
         }
         setTimeout(getStreamState, 1000);
         break;
@@ -81,8 +84,8 @@ const renderVCDev = (devid, state) => {//devid is int
         if (prevState[devid] !== 4) {
           if (prevState[devid] !== 3) {
             renderStateTemplate(deviceBlock, "preview");
-            deviceBlock.find('.dev-img').css("filter", '');
-            deviceBlock.find('.dev-img').attr('src',`/static/photos/${devid}/beforeStream.jpg?${Math.random()}`);
+            //deviceBlock.find('.dev-img').css("filter", '');
+            deviceBlock.find('.dev-img').attr('src',`/static/photos/beforeStream${devid}.jpg?${Math.random()}`);
           }
           deviceBlock.find('#streamProgress')[0].value = 5/6;
           deviceBlock.find('#streamProgressValue').html("5/6");
@@ -94,8 +97,8 @@ const renderVCDev = (devid, state) => {//devid is int
         if (prevState[devid] !== 5) {
           if (prevState[devid] !== 3 && prevState[devid] !== 4) {
             renderStateTemplate(deviceBlock, "preview");
-            deviceBlock.find('.dev-img').css("filter", '');
-            deviceBlock.find('.dev-img').attr('src',`/static/photos/${devid}/beforeStream.jpg?${Math.random()}`);
+            //deviceBlock.find('.dev-img').css("filter", '');
+            deviceBlock.find('.dev-img').attr('src',`/static/photos/beforeStream${devid}.jpg?${Math.random()}`);
           }
           renderStateTemplate(deviceBlock, "video");
 

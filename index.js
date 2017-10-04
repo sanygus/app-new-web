@@ -58,4 +58,4 @@ app.get('/static/stream/:devid/manifest.mpd', (req, res) => {
 
 app.use('/static', express.static(__dirname + '/static'));
 
-app.listen(80);
+app.listen(5000);
