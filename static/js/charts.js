@@ -128,6 +128,7 @@ const drawChart = (devid, data) => {
         "event": "rendered",
         "method": function(e) {
           e.chart.zoomToIndexes(data.sensors.length - 8, data.sensors.length);
+          $("tspan:contains('Показать все')").parent().parent().parent().remove();
         }
     }, {
         "event": "zoomed",
