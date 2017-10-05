@@ -10,7 +10,14 @@ const loadTemplate = (cb) => {
 const getState = (cb) => {
   fetch('http://geoworks.pro:3000/state')
     .then((r) => { return r.json() })
-    .then(cb);
+    .then((state) => {
+      if (window.location.href.indexOf('?upr') > 0) {
+        const fstate = state.filter((dev) => {
+          return (dev.devid === 4)
+        });
+        cb(fstate);
+      } else { cb(state) }
+    });//filter
 }
 
 const getDevData = (devid, cb) => {
