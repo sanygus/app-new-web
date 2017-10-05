@@ -1,7 +1,6 @@
-/*UIkit.modal($("#modal-media-video")).show();*/
-
 const players = {};
 const prevState = {};
+let gssTO = null;
 
 const getStreamState = () => {
   if (devicesID.length > 0) {
@@ -16,13 +15,17 @@ const getStreamState = () => {
       });
   }
 }
+const getStreamStateTO = (sec) => {
+  clearInterval(gssTO);
+  gssTO = setTimeout(getStreamState, sec * 1000);
+}
 
 const renderVCDev = (devid, state) => {//devid is int
   if (typeof(state) === "string") {
     console.error(`dev ${devid} - ${state}`);
     UIkit.notification("Извините, включение временно недоступно. Попробуйте позднее", {status:'warning'});//Извините, произошла ошибка. Попробуйте позднее
     renderStateTemplate($("#device-" + devid + "-block"), "init");
-    //setTimeout(getStreamState, 30000);
+    getStreamStateTO(3);
   } else {
     const deviceBlock = $("#device-" + devid + "-block");
     switch(state) {
@@ -35,9 +38,16 @@ const renderVCDev = (devid, state) => {//devid is int
               .then((resp) => {
                 if (resp.ok) { setTimeout(getStreamState, 1000); }
               });
+            deviceBlock.find("button:contains('Онлайн видео')").click();
           });
+          deviceBlock.find("button:contains('Нет')").click(() => { deviceBlock.find("button:contains('Онлайн видео')").click(); });
+          if (deviceBlock.find(".dev-status").find("span:contains('Включен')").is("span")) {
+            deviceBlock.find(".waitTimeText").html("1 минуту");
+          } else {
+            deviceBlock.find(".waitTimeText").html("2 минуты");
+          }
         }
-        //setTimeout(getStreamState, 30000);
+        getStreamStateTO(20);
         break;
       case 1:
         if (prevState[devid] !== 1) {
@@ -54,7 +64,7 @@ const renderVCDev = (devid, state) => {//devid is int
             }
           }, 39000);
         }
-        setTimeout(getStreamState, 5000);
+        getStreamStateTO(4);
         break;
       case 2:
         if (prevState[devid] !== 2) {
@@ -67,7 +77,7 @@ const renderVCDev = (devid, state) => {//devid is int
           deviceBlock.find('#streamLoadState').html("Включено, инициализация камеры");
           UIkit.notification("Устройство включено", {status:'success'});
         }
-        setTimeout(getStreamState, 3000);
+        getStreamStateTO(3);
         break;
       case 3:
         if (prevState[devid] !== 3) {
@@ -78,7 +88,7 @@ const renderVCDev = (devid, state) => {//devid is int
           //deviceBlock.find('.dev-img').css("filter", '');
           deviceBlock.find('.dev-img').attr('src',`/static/photos/beforeStream${devid}.jpg?${Math.random()}`);
         }
-        setTimeout(getStreamState, 1000);
+        getStreamStateTO(1);
         break;
       case 4:
         if (prevState[devid] !== 4) {
@@ -91,7 +101,7 @@ const renderVCDev = (devid, state) => {//devid is int
           deviceBlock.find('#streamProgressValue').html("5/6");
           deviceBlock.find('#streamLoadState').html("Инициализация конвертера");
         }
-        setTimeout(getStreamState, 1000);
+        getStreamStateTO(1);
         break;
       case 5:
         if (prevState[devid] !== 5) {
@@ -103,19 +113,21 @@ const renderVCDev = (devid, state) => {//devid is int
           renderStateTemplate(deviceBlock, "video");
 
           setTimeout(() => {
-            UIkit.modal.confirm('Трансляция будет завершена через несколько секунд. Вы желаете продолжить трансляцию?').then(() => {
-              fetch(`http://geoworks.pro:3000/${devid}/nosleep`).then((r) => {
-                if (r.status === 200) { UIkit.notification("Трансляция поддержана", {status:'success'}); }
-                else { UIkit.notification("Не удалось поддержать трансляцию", {status:'warning'}); }
-              });
-            }, () => {});
+            if (prevState[devid] === 5) {
+              UIkit.modal.confirm('Трансляция будет завершена через несколько секунд. Вы желаете продолжить трансляцию?').then(() => {
+                fetch(`http://geoworks.pro:3000/${devid}/nosleep`).then((r) => {
+                  if (r.status === 200) { UIkit.notification("Трансляция поддержана", {status:'success'}); }
+                  else { UIkit.notification("Не удалось поддержать трансляцию", {status:'warning'}); }
+                });
+              }, () => {});
+            }
           }, 330000);//TODO: reinit after self
 
           if (prevState[devid] < 5) {
             deviceBlock.find("#streamLiveLabel").before(`<progress class="uk-progress" id="streamProgress" min="0" max="1"></progress>`);
             let liveProgressTO = setInterval(() => {
-              deviceBlock.find("#streamProgress")[0].value += 0.01;
-            }, 39000 / 100);
+              deviceBlock.find("#streamProgress")[0].value += 0.02;
+            }, 39000 / 50);
             setTimeout(() => {
               playerInit(devid);
               clearInterval(liveProgressTO);
@@ -124,9 +136,16 @@ const renderVCDev = (devid, state) => {//devid is int
           } else if (prevState[devid] === undefined) {
             playerInit(devid);
           }
-          //setTimeout();//playerInit
+
+          deviceBlock.find(".stopStreamButton").click(() => {
+            fetch(`/stream/stop/${devid}`)
+              .then((r) => { return r.json() })
+              .then((resp) => {
+                if (resp.ok) { getStreamStateTO(1) }
+              });
+          });
         }
-        setTimeout(getStreamState, 30000);
+        getStreamStateTO(30);
         break;
       default: console.log(`uncertain state dev ${devid}`); break;
     }
@@ -144,8 +163,11 @@ const getStateTemplate = {
               </button>
               <div uk-drop="mode: click;pos: top-center;">
                 <div class="uk-card uk-card-body uk-card-default uk-padding-small">
-                  <p>Вы готовы немного подождать?</p>
-                  <button class="uk-button uk-button-primary uk-button-small uk-width-1-1 startStreamButton">Да</button>
+                  <p>Инициализация видеопотока займёт <span class="waitTimeText">[]</span>.<br>Вы хотите продолжить?</p>
+                  <div class="uk-button-group uk-width-1-1">
+                    <button class="uk-button uk-button-default uk-button-small uk-width-1-2">Нет</button>
+                    <button class="uk-button uk-button-primary uk-button-small uk-width-1-2 startStreamButton">Да</button>
+                  </div>
                 </div>
               </div>
             </div>`
@@ -167,11 +189,12 @@ const getStateTemplate = {
             </div>`
   },
   "video": () => {
-    return `<div class="uk-position-cover uk-overlay uk-padding-remove">
+    return `<div class="uk-position-cover uk-overlay uk-padding-remove uk-inline-clip uk-transition-toggle">
               <div class="uk-position-top-right" id="streamLiveLabel" style="opacity:0;"><span class="uk-label uk-label-danger">LIVE</span></div>
               <video uk-video id="videoContainer"></video>
               <div uk-spinner class="uk-position-center streamLoadSpinner"></div>
-              <div class="uk-position-bottom-right"><a href="#" uk-icon="icon: expand" id="expandVideo"></a></div>
+              <div class="uk-position-top-right uk-transition-slide-right-small" style="margin-top:35px;"><button class="uk-button uk-button-secondary uk-button-small stopStreamButton">Остановить</button></div>
+              <div class="uk-position-bottom-right uk-transition-slide-right-small"><a href="#" uk-icon="icon: expand" id="expandVideo"></a></div>
             </div>`
   },
 }

@@ -56,7 +56,17 @@ module.exports.state = (devsid) => {
     if (typeof state[devid] === "string") { state[devid] = 0; }//tempfix
   }
   return result;
-};
+}
+
+module.exports.stop = async (devid) => {
+  if ((state[devid] > 0) || (typeof state[devid] === "string")) {
+    await dashConv.stop(devid);
+    try {
+      await stopStreamOnDev(devid);
+    } catch (e) { console.log(e.message) }
+    state[devid] = 0;
+  }
+}
 
 const getDevsState = () => {
   return new Promise((resolve, reject) => {
@@ -96,6 +106,18 @@ const startStreamOnDev = (devid) => {
         resolve();
       } else {
         reject(new Error(`can't start stream on dev ${devid}`));
+      }
+    });
+  });
+}
+
+const stopStreamOnDev = (devid) => {
+  return new Promise((resolve, reject) => {
+    request(`http://geoworks.pro:3000/${devid}/stream/stop`, (error, resp, body) => {
+      if (JSON.parse(body).ok) {
+        resolve();
+      } else {
+        reject(new Error(`can't stop stream on dev ${devid}`));
       }
     });
   });
@@ -166,7 +188,8 @@ const dashConv = {
   },
   stop: (devid) => {
     return new Promise((resolve, reject) => {
-      if (processes[devid]) { processes[devid].kill("SIGINT"); }
+      if (processes[devid] && !processes[devid].killed) { processes[devid].kill("SIGINT"); }
+      processes[devid] = null;
       resolve();
     });
   }

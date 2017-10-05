@@ -49,6 +49,12 @@ app.get('/stream/state/:devsid', (req, res) => {
   res.type('application/json').status(200).send(stream.state(devsid));
 });
 
+app.get('/stream/stop/:devid', (req, res) => {
+  const devid = parseInt(req.params.devid);
+  stream.stop(devid);
+  res.type('application/json').status(200).send({ ok: true });
+});
+
 app.get('/static/stream/:devid/manifest.mpd', (req, res) => {
   res.setHeader('Content-Type', 'application/xml');
   mpdConverter(`static/stream/${req.params.devid}/manifest.mpd`, (err, data) => {
