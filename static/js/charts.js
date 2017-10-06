@@ -13,7 +13,7 @@ const drawChart = (devid, data) => {
     }
     if (nearFileDate) {
       sens.file = `/static/photos/${devid}/` + nearFileDate.toJSON().replace('.000Z', '.jpg');
-      sens.fileValue = 1;
+      sens.fileValue = 10;
     }
   }
 
@@ -54,7 +54,7 @@ const drawChart = (devid, data) => {
     }, {
         "id":"vimg",
         "labelsEnabled": false,
-        "maximum": 1,
+        "maximum": 10,
         "minimum": 0,
         "axisAlpha": 0,
         "gridAlpha": 0,
@@ -69,7 +69,7 @@ const drawChart = (devid, data) => {
         "hideBulletsCount": 30,
         "title": "Температура",
         "valueField": "temp",
-        "type": "line",
+        "type": "smoothedLine",
         "fillAlphas": 0,
     }, {
         "valueAxis": "vpress",
@@ -81,7 +81,7 @@ const drawChart = (devid, data) => {
         "hideBulletsCount": 30,
         "title": "Давление",
         "valueField": "press",
-        "type": "line",
+        "type": "smoothedLine",
         "fillAlphas": 0
     }, {
         "valueAxis": "vimg",
@@ -144,9 +144,26 @@ const drawChart = (devid, data) => {
   for (file of data.files) {
     photoItems.push({ source: `/static/photos/${devid}/${file}`, caption: moment.utc(file.replace('.jpg','')).local().format("LLL") })
   }
-  lboxes[devid] = UIkit.lightboxPanel({ items: photoItems });
+  lboxes[devid] = UIkit.lightboxPanel({ items: photoItems, template: lboxTemplate });
+  $(".timeLapseLeft").click(() => {
+
+  });
 
 }
 const bulletToTop = () => {
   $("g image[height='80']").attr("transform","translate(-40,-190)");
 }
+const lboxTemplate = `
+<div class=\"uk-lightbox uk-overflow-hidden\">
+  <ul class=\"uk-lightbox-items\"></ul>
+  <div class=\"uk-lightbox-toolbar uk-position-top uk-text-right\">
+    <div class="uk-position-center">
+      <a href="#" class="uk-icon-link timeLapseLeft" uk-icon="icon: triangle-left; ratio: 2;"></a>
+      <a href="#" class="uk-icon-link timeLapseRight uk-dark" uk-icon="icon: triangle-right; ratio: 2;"></a>
+    </div>
+    <button class=\"uk-lightbox-toolbar-icon uk-close-large\" type=\"button\" uk-close uk-toggle=\"!.uk-lightbox\"></button>
+  </div>
+  <a class=\"uk-lightbox-button uk-position-center-left uk-position-medium\" href=\"#\" uk-slidenav-previous uk-lightbox-item=\"previous\"></a>
+  <a class=\"uk-lightbox-button uk-position-center-right uk-position-medium\" href=\"#\" uk-slidenav-next uk-lightbox-item=\"next\"></a>
+  <div class=\"uk-lightbox-toolbar uk-lightbox-caption uk-position-bottom uk-text-center\"></div>
+</div>`;
