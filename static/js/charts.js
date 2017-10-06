@@ -142,7 +142,7 @@ const drawChart = (devid, data) => {
 
   const photoItems = [];
   for (file of data.files) {
-    photoItems.push({ source: `/static/photos/${devid}/${file}`, caption: moment(file.replace('.jpg','')).format("LLL") })
+    photoItems.push({ source: `/static/photos/${devid}/${file}`, caption: moment.utc(file.replace('.jpg','')).format("LLL") })
   }
   lboxes[devid] = UIkit.lightboxPanel({ items: photoItems });
 
