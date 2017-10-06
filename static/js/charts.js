@@ -1,3 +1,5 @@
+const lboxes = {};
+
 const drawChart = (devid, data) => {
   for (sens of data.sensors) {
     const sensdate = new Date(sens.date);
@@ -121,8 +123,10 @@ const drawChart = (devid, data) => {
         "event": "clickGraphItem",
         "method": function(event) {
           const dc = event.item.dataContext;
-          const df = new Date(dc.file.substr(-23).replace('.jpg','.000Z'));
-          UIkit.lightboxPanel({ "items": [{ "source": dc.file, "caption": moment(df).format("LLL") }] }).show();
+          const showIndex = lboxes[devid].items.findIndex((lbitem) => {
+            return lbitem.source === dc.file
+          });
+          lboxes[devid].show(showIndex);
         }
     }, {
         "event": "rendered",
@@ -135,6 +139,13 @@ const drawChart = (devid, data) => {
         "method": bulletToTop
     }]
   });
+
+  const photoItems = [];
+  for (file of data.files) {
+    photoItems.push({ source: `/static/photos/${devid}/${file}`, caption: moment(file.replace('.jpg','')).format("LLL") })
+  }
+  lboxes[devid] = UIkit.lightboxPanel({ items: photoItems });
+
 }
 const bulletToTop = () => {
   $("g image[height='80']").attr("transform","translate(-40,-190)");
