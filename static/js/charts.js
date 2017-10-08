@@ -69,7 +69,7 @@ const drawChart = (devid, data) => {
         "hideBulletsCount": 30,
         "title": "Температура",
         "valueField": "temp",
-        "type": "smoothedLine",
+        "type": "line",
         "fillAlphas": 0,
     }, {
         "valueAxis": "vpress",
@@ -81,7 +81,7 @@ const drawChart = (devid, data) => {
         "hideBulletsCount": 30,
         "title": "Давление",
         "valueField": "press",
-        "type": "smoothedLine",
+        "type": "line",
         "fillAlphas": 0
     }, {
         "valueAxis": "vimg",
@@ -144,11 +144,50 @@ const drawChart = (devid, data) => {
   for (file of data.files) {
     photoItems.push({ source: `/static/photos/${devid}/${file}`, caption: moment.utc(file.replace('.jpg','')).local().format("LLL") })
   }
-  lboxes[devid] = UIkit.lightboxPanel({ items: photoItems, template: lboxTemplate });
-  $(".timeLapseLeft").click(() => {
+  if (!lboxes[devid] || !lboxes[devid].dontUpdate) {
+    if (lboxes[devid] && !lboxes[devid].dontUpdate) {
+      lboxes[devid].$destroy();
+      lboxes[devid].$el.remove();
+    }
+    lboxes[devid] = UIkit.lightboxPanel({ items: photoItems, template: lboxTemplate });
 
-  });
-
+    lboxes[devid].dontUpdate = false;
+    lboxes[devid].slider = { dir: 0, tmr: null };
+    lboxes[devid].$el.find(".timeLapseLeft").click(function() {
+      clearInterval(lboxes[devid].slider.tmr);
+      if (lboxes[devid].slider.dir === -1) {
+        $(this).find('polygon').css('color','');
+        lboxes[devid].slider.dir = 0;
+      } else {
+        $(this).find('polygon').css('color','#1e87f0');
+        $(this).next().find('polygon').css('color','');
+        lboxes[devid].$el.find("a[uk-slidenav-previous]").click();
+        lboxes[devid].slider.tmr = setInterval(() => { lboxes[devid].$el.find("a[uk-slidenav-previous]").click() }, 3000);
+        lboxes[devid].slider.dir = -1;
+      }
+    });
+    lboxes[devid].$el.find(".timeLapseRight").click(function() {
+      clearInterval(lboxes[devid].slider.tmr);
+      if (lboxes[devid].slider.dir === 1) {
+        $(this).find('polygon').css('color','');
+        lboxes[devid].slider.dir = 0;
+      } else {
+        $(this).find('polygon').css('color','#1e87f0');
+        $(this).prev().find('polygon').css('color','');
+        lboxes[devid].$el.find("a[uk-slidenav-next]").click();
+        lboxes[devid].slider.tmr = setInterval(() => { lboxes[devid].$el.find("a[uk-slidenav-next]").click() }, 3000);
+        lboxes[devid].slider.dir = 1;
+      }
+    });
+    lboxes[devid].$el.on('hide', () => {
+      clearInterval(lboxes[devid].slider.tmr);
+      lboxes[devid].$el.find(".timeLapseLeft").find('polygon').css('color','');
+      lboxes[devid].$el.find(".timeLapseRight").find('polygon').css('color','');
+      lboxes[devid].slider.dir = 0;
+      lboxes[devid].dontUpdate = false;
+    });
+    lboxes[devid].$el.on('show', () => { lboxes[devid].dontUpdate = true; });
+  }
 }
 const bulletToTop = () => {
   $("g image[height='80']").attr("transform","translate(-40,-190)");
@@ -167,3 +206,10 @@ const lboxTemplate = `
   <a class=\"uk-lightbox-button uk-position-center-right uk-position-medium\" href=\"#\" uk-slidenav-next uk-lightbox-item=\"next\"></a>
   <div class=\"uk-lightbox-toolbar uk-lightbox-caption uk-position-bottom uk-text-center\"></div>
 </div>`;
+const slideLBox = (lbox) => {
+  if (lbox.slider === -1) {
+    lbox.$el.find("a[uk-slidenav-previous]").click();
+  } else if (lbox.slider === 1) { 
+    lbox.$el.find("a[uk-slidenav-next]").click();
+  }
+}
