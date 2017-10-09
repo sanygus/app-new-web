@@ -6,21 +6,17 @@
         <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.30/css/uikit.min.css" />
         <link rel="stylesheet" href="/static/main.css" />
+        <link rel="stylesheet" href="/static/introjs.min.css" />
     </head>
     <body>
         <div class="uk-container" style="min-width: 1200px;">
-            <h1>Солнечный компьютер, ГК Информатика</h1>
+            <div uk-grid>
+                <h1 class="uk-width-expand">Солнечный компьютер, ГК Информатика</h1>
+                <div class="uk-width-auto uk-flex uk-flex-bottom"><a href="#" class="uk-icon-link runHelper" uk-icon="icon: question" title="Запустить помощник" onclick="introInit();"></a></div>
+            </div>
             <hr>
             <div uk-spinner id="globalLoader" style="position:absolute;top:50px;left:10px;"></div>
             <div id="dataContainer"></div>
-
-            <div id="modal-media-video" class="uk-flex-top" uk-modal>
-                <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
-                    <button class="uk-modal-close-outside" type="button" uk-close></button>
-                    <video id="video-container" controls></video>
-                </div>
-            </div>
-
         </div>
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -31,10 +27,12 @@
     <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
     <script src="https://www.amcharts.com/lib/3/serial.js"></script>
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
-    <script src="https:////www.amcharts.com/lib/3/lang/ru.js"></script>
+    <script src="https://www.amcharts.com/lib/3/lang/ru.js"></script>
+    <script src="/static/js/intro.min.js"></script>
+    <script src="/static/js/introGW.js"></script>
     <script src="/static/js/charts.js"></script>
     <script src="/static/js/mainData.js"></script>
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/2.6.0/dash.mediaplayer.min.js"></script>-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/2.6.0/dash.mediaplayer.debug.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/2.6.0/dash.mediaplayer.min.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/2.6.0/dash.mediaplayer.debug.js"></script>-->
     <script src="/static/js/player.js"></script>
 </html>

@@ -35,6 +35,7 @@ $( document ).ready(() => {
       $( "#dataContainer" ).html(ejs.render(tmpl, { devs: devsState }));
       renderData(devsState);
       setTimeout(getStreamState, 2000);
+      //setTimeout(checkIntro, 2000);
     });
   });
 });
@@ -72,7 +73,7 @@ const renderData = (devsState) => {
           block.find(".dev-sens-temp").html(lastSens.temp);
           block.find(".dev-sens-press").html(lastSens.press);
           block.find(".dev-sens-date").html(moment(lastSens.date).format("lll"));
-          drawChart(dev.devid, data);
+          if (intro._currentStep === undefined) { drawChart(dev.devid, data); }
         }
         $( "#globalLoader" ).hide(1000);
       });
@@ -82,3 +83,7 @@ const renderData = (devsState) => {
   }
   setTimeout(updateData, 60000);
 }
+
+/*const checkIntro = () => {
+
+}*/

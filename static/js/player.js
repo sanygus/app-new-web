@@ -201,7 +201,7 @@ const getStateTemplate = {
 }
 
 const renderStateTemplate = (devBlk, tmpl) => {
-  devBlk.find('#atopimg').html(getStateTemplate[tmpl]());
+  devBlk.find('.atopimg').html(getStateTemplate[tmpl]());
 }
 
 const playerInit = (devid) => {

@@ -132,13 +132,14 @@ const drawChart = (devid, data) => {
         "event": "rendered",
         "method": function(e) {
           e.chart.zoomToIndexes(data.sensors.length - 8, data.sensors.length);
-          $("tspan:contains('Показать все')").parent().parent().parent().remove();
         }
     }, {
         "event": "zoomed",
         "method": bulletToTop
     }]
   });
+  
+  introCheck();
 
   const photoItems = [];
   for (file of data.files) {
@@ -191,6 +192,7 @@ const drawChart = (devid, data) => {
 }
 const bulletToTop = () => {
   $("g image[height='80']").attr("transform","translate(-40,-190)");
+  $("tspan:contains('Показать все')").parent().parent().parent().remove();
 }
 const lboxTemplate = `
 <div class=\"uk-lightbox uk-overflow-hidden\">

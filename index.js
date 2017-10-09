@@ -27,7 +27,7 @@ app.get('/getdata/:devid', (req, res) => {
       files: (callback) => {
         fs.readdir(`${photosdir}/${devid}`, (err, filesarr) => {
           if (filesarr) { filesarr.sort(); }
-          callback(err, filesarr);
+          callback(err, filesarr.slice(-50));
         });
       },
     },
