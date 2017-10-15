@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>S&Co [Monitoring]</title>
+        <title>S&Co [Информатика]</title>
         <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.30/css/uikit.min.css" />
         <link rel="stylesheet" href="/static/main.css" />
@@ -10,10 +10,17 @@
     </head>
     <body>
         <div class="uk-container" style="min-width: 1200px;">
-            <div uk-grid>
-                <h1 class="uk-width-expand">Солнечный компьютер, ГК Информатика</h1>
-                <div class="uk-width-auto uk-flex uk-flex-bottom"><a href="#" class="uk-icon-link runHelper" uk-icon="icon: question" title="Запустить помощник" onclick="introInit();"></a></div>
-            </div>
+            <nav class="uk-navbar-container uk-navbar-transparent uk-margin-small-top" uk-navbar>
+                <div class="uk-navbar-left"><img src="/static/img/inflogo.png"></div>
+                <div class="uk-navbar-center">
+                    <span class="uk-text-lead uk-text-bold" style="font-size: 1.9rem;color:#444;">Солнечный компьютер</span>
+                </div>
+                <div class="uk-navbar-right">
+                    <a class="uk-button uk-button-text uk-button-large uk-margin-right" href="/about">Описание устройства</a>
+                    <a class="uk-icon-link runHelper" uk-icon="icon: question" title="Запустить помощник" onclick="introInit();"></a>
+                </div>
+
+            </nav>
             <hr>
             <div uk-spinner id="globalLoader" style="position:absolute;top:50px;left:10px;"></div>
             <div id="dataContainer"></div>

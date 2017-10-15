@@ -17,6 +17,10 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/html/index.html');
 });
 
+app.get('/about', function(req, res) {
+  res.sendFile(__dirname + '/static/about/index.html');
+});
+
 app.get('/getdata/:devid', (req, res) => {
   const devid = parseInt(req.params.devid);
   async.parallel(
