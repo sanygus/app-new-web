@@ -33,12 +33,11 @@ const renderVCDev = (devid, state) => {//devid is int
         if (prevState[devid] !== 0) {
           renderStateTemplate(deviceBlock, "init");
           deviceBlock.find(".startStreamButton").click(() => {
-            /*fetch(`/stream/start/${devid}`)
+            fetch(`/stream/start/${devid}`)
               .then((r) => { return r.json() })
               .then((resp) => {
                 if (resp.ok) { setTimeout(getStreamState, 1000); }
-              });*/
-            UIkit.notification("У меня выходной! Пожалуйста, не дёргайте меня сегодня...", {status:'primary'});
+              });
             deviceBlock.find("button:contains('Онлайн видео')").click();
           });
           deviceBlock.find("button:contains('Нет')").click(() => { deviceBlock.find("button:contains('Онлайн видео')").click(); });
