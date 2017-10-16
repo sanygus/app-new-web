@@ -16,14 +16,19 @@
                     <span class="uk-text-lead uk-text-bold" style="font-size: 1.9rem;color:#444;">Солнечный компьютер</span>
                 </div>
                 <div class="uk-navbar-right">
-                    <a class="uk-button uk-button-text uk-button-large uk-margin-right" href="/about">Описание устройства</a>
+                    <a class="uk-button uk-button-text uk-button-large uk-margin-right" onclick="UIkit.modal($('#modal-about')).show();">Описание устройства</a>
                     <a class="uk-icon-link runHelper" uk-icon="icon: question" title="Запустить помощник" onclick="introInit();"></a>
                 </div>
-
             </nav>
             <hr>
             <div uk-spinner id="globalLoader" style="position:absolute;top:50px;left:10px;"></div>
             <div id="dataContainer"></div>
+        </div>
+        <div id="modal-about" uk-modal>
+          <div class="uk-modal-dialog" style="width:990px;height:100%;">
+            <button class="uk-modal-close-outside" type="button" uk-close></button>
+            <iframe src="/about" width="990px" height="100%"></iframe>
+          </div>
         </div>
         <!-- Yandex.Metrika counter -->
         <script type="text/javascript" >
