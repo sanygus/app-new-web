@@ -124,7 +124,7 @@ const drawChart = (devid, data) => {
         "method": function(event) {
           const dc = event.item.dataContext;
           const showIndex = lboxes[devid].items.findIndex((lbitem) => {
-            return lbitem.source === dc.file
+            return lbitem.source === dc.file.replace('/thumb','')
           });
           lboxes[devid].show(showIndex);
         }
