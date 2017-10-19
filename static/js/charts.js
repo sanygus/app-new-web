@@ -12,7 +12,7 @@ const drawChart = (devid, data) => {
       }
     }
     if (nearFileDate) {
-      sens.file = `/static/photos/${devid}/` + nearFileDate.toJSON().replace('.000Z', '.jpg');
+      sens.file = `/static/photos/${devid}/thumb/` + nearFileDate.toJSON().replace('.000Z', '.jpg');
       sens.fileValue = 10;
     }
   }
