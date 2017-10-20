@@ -163,7 +163,7 @@ const drawChart = (devid, data) => {
         $(this).find('polygon').css('color','#1e87f0');
         $(this).next().find('polygon').css('color','');
         lboxes[devid].$el.find("a[uk-slidenav-previous]").click();
-        lboxes[devid].slider.tmr = setInterval(() => { lboxes[devid].$el.find("a[uk-slidenav-previous]").click() }, 150);
+        lboxes[devid].slider.tmr = setInterval(() => { lboxes[devid].$el.find("a[uk-slidenav-previous]").click() }, 300);
         lboxes[devid].slider.dir = -1;
       }
     });
@@ -176,7 +176,7 @@ const drawChart = (devid, data) => {
         $(this).find('polygon').css('color','#1e87f0');
         $(this).prev().find('polygon').css('color','');
         lboxes[devid].$el.find("a[uk-slidenav-next]").click();
-        lboxes[devid].slider.tmr = setInterval(() => { lboxes[devid].$el.find("a[uk-slidenav-next]").click() }, 150);
+        lboxes[devid].slider.tmr = setInterval(() => { lboxes[devid].$el.find("a[uk-slidenav-next]").click() }, 300);
         lboxes[devid].slider.dir = 1;
       }
     });
