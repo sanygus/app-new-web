@@ -1,5 +1,6 @@
 //let devTmpl;
 const devicesID = [];
+const prevDataHash = {};
 
 const loadTemplate = (cb) => {
   fetch('/static/devTmpl.ejs')
@@ -62,18 +63,24 @@ const renderData = (devsState) => {
       block.find(".dev-status").html(tmphtml); tmphtml = '';
 
       getDevData(dev.devid, (data) => {
-        let lastPhoto = '../default.jpg';
-        if (data.files && data.files.length > 0) {
-          lastPhoto = data.files[data.files.length - 1];
-        }
-        block.find(".dev-img").attr("src", `/static/photos/${dev.devid}/${lastPhoto}`);
-        //block.find(".dev-img").attr("title", `${lastPhoto.replace('.jpg','')}`);
-        if (data.sensors && data.sensors.length > 0) {
-          let lastSens = data.sensors[data.sensors.length - 1];
-          block.find(".dev-sens-temp").html(lastSens.temp);
-          block.find(".dev-sens-press").html(lastSens.press);
-          block.find(".dev-sens-date").html(moment(lastSens.date).format("lll"));
-          if (intro._currentStep === undefined) { drawChart(dev.devid, data); }
+        if (JSON.stringify(data).slice(-50) !== prevDataHash[dev.devid]) {
+          prevDataHash[dev.devid] = JSON.stringify(data).slice(-50);
+          let lastPhoto = '../default.jpg';
+          if (data.files && data.files.length > 0) {
+            lastPhoto = data.files[data.files.length - 1];
+          }
+          block.find(".dev-img").attr("src", `/static/photos/${dev.devid}/${lastPhoto}`);
+          //block.find(".dev-img").attr("title", `${lastPhoto.replace('.jpg','')}`);
+          if (data.sensors && data.sensors.length > 0) {
+            let lastSens = data.sensors[data.sensors.length - 1];
+            block.find(".dev-sens-temp").html(lastSens.temp);
+            block.find(".dev-sens-press").html(lastSens.press);
+            block.find(".dev-sens-date").html(moment(lastSens.date).format("lll"));
+            if (intro._currentStep === undefined) { drawChart(dev.devid, data); }
+          }
+          console.log(`data updated ${new Date()}`);
+        } else {
+          console.log(`data not updated ${new Date()}`);
         }
         $( "#globalLoader" ).hide(1000);
       });

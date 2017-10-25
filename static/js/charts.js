@@ -1,3 +1,4 @@
+const charts = {};
 const lboxes = {};
 
 const drawChart = (devid, data) => {
@@ -20,7 +21,8 @@ const drawChart = (devid, data) => {
   console.log(data);
 
   //make chart
-  AmCharts.makeChart($(`#device-${devid}-block`).find(".chartdiv")[0], {
+  if (charts[devid] && charts[devid].clear) { charts[devid].clear(); }
+  charts[devid] = AmCharts.makeChart($(`#device-${devid}-block`).find(".chartdiv")[0], {
     "type": "serial",
     "theme": "light",
     "language": "ru",
