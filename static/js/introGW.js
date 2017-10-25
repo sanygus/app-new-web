@@ -15,6 +15,10 @@ const introInit = () => {
         intro: "Вы в любое время можете запустить помощник, кликнув здесь",
       },
       {
+        element: document.querySelector(".openDevDescr"),
+        intro: "Здесь открывается описание устройства",
+      },
+      {
         element: document.querySelector(".dev-label"),
         intro: "Местонахождение устройства",
       },
@@ -65,6 +69,9 @@ const introInit = () => {
       {
         element: document.querySelector(".amcharts-legend-div"),
         intro: "Легенда к графику. Можно отключить/включить набор отображаемых данных, клинкнув по нему",
+      },
+      {
+        intro: "Внизу страницы есть карта расположения устройств<br>На этом ознакомление завершено",
       },
     ],
   });

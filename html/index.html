@@ -16,9 +16,9 @@
                     <span class="uk-text-lead uk-text-bold" style="font-size: 1.9rem;color:#444;">Солнечный компьютер</span>
                 </div>
                 <div class="uk-navbar-right">
-                    <a class="uk-button uk-button-text uk-button-large uk-margin-right" onclick="UIkit.modal($('#modal-about')).show();">Описание устройства</a>
-                    <a class="uk-icon-link runHelper" uk-icon="icon: question" title="Запустить помощник" onclick="introInit();"></a>
+                    <a class="uk-button uk-button-text uk-button-large openDevDescr" onclick="UIkit.modal($('#modal-about')).show();">Описание устройства</a>
                 </div>
+                <a class="uk-icon-link runHelper" style="position:absolute;top:70px;right:-30px;" uk-icon="icon: question" title="Запустить гид по интерфейсу" onclick="introInit();"></a>
             </nav>
             <hr>
             <div uk-spinner id="globalLoader" style="position:absolute;top:50px;left:10px;"></div>
