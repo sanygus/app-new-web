@@ -133,7 +133,7 @@ const drawChart = (devid, data) => {
     }, {
         "event": "rendered",
         "method": function(e) {
-          e.chart.zoomToIndexes(data.sensors.length - 8, data.sensors.length);
+          e.chart.zoomToIndexes(data.sensors.length - 9, data.sensors.length);
         }
     }, {
         "event": "zoomed",
