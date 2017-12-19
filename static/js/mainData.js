@@ -14,7 +14,7 @@ const getState = (cb) => {
     .then((state) => {
       if (window.location.href.indexOf('?upr') > 0) {
         const fstate = state.filter((dev) => {
-          return (dev.devid === 4)
+          return (dev.devid === 3)
         });
         cb(fstate);
       } else { cb(state) }
