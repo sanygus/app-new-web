@@ -6,6 +6,7 @@ RUN apk update
 RUN apk upgrade
 RUN apk add bash
 RUN apk add grep
+RUN apk add ffmpeg
 
 WORKDIR $DIR
 RUN chmod +x wait-for-mongo.sh
