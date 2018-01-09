@@ -9,7 +9,7 @@ const loadTemplate = (cb) => {
 }
 
 const getState = (cb) => {
-  fetch('https://geoworks.pro:3000/state')
+  fetch('https://geoworks.pro:3004/state')
     .then((r) => { return r.json() })
     .then((state) => {
       if (window.location.href.indexOf('?upr') > 0) {
