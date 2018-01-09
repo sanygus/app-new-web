@@ -115,7 +115,7 @@ const renderVCDev = (devid, state) => {//devid is int
           setTimeout(() => {
             if (prevState[devid] === 5) {
               UIkit.modal.confirm('Трансляция будет завершена через несколько секунд. Вы желаете продолжить трансляцию?').then(() => {
-                fetch(`http://geoworks.pro:3000/${devid}/nosleep`).then((r) => {
+                fetch(`https://geoworks.pro:3000/${devid}/nosleep`).then((r) => {
                   if (r.status === 200) { UIkit.notification("Трансляция поддержана", {status:'success'}); }
                   else { UIkit.notification("Не удалось поддержать трансляцию", {status:'warning'}); }
                 });
