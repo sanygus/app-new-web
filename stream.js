@@ -7,6 +7,9 @@ const state = {};
 const streamDir = __dirname + '/static/stream';
 const processes = {};
 
+const protocol = 'http://';
+const host = 'sunputer-back:3000';
+
 module.exports.start = async (devid) => {
   if ((state[devid] === 0) || (state[devid] === undefined) || (typeof state[devid] === "string")) {
     try {
@@ -70,7 +73,7 @@ module.exports.stop = async (devid) => {
 
 const getDevsState = () => {
   return new Promise((resolve, reject) => {
-    request('https://geoworks.pro:3000/state', (error, resp, body) => {
+    request(`${protocol}${host}/state`, (error, resp, body) => {
       if (resp && resp.statusCode === 200) {
         const devices = [];
         try {
@@ -78,6 +81,7 @@ const getDevsState = () => {
         } catch(e) {}
         resolve(devices);
       } else {
+        console.log(error);
         reject(new Error('no valid answer'));
       }
     });
@@ -86,7 +90,7 @@ const getDevsState = () => {
 
 const getPhoto = (deviceID) => {
   return new Promise((resolve, reject) => {
-    request(`https://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
+    request(`${protocol}${host}/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
       if (resp.headers['content-type'] === 'image/jpeg') {
         fs.writeFile(`${__dirname}/static/photos/beforeStream${deviceID}.jpg`, body, 'binary', (err) => {
           //if (err && err.code === 'ENOENT') { }
@@ -101,7 +105,7 @@ const getPhoto = (deviceID) => {
 
 const startStreamOnDev = (devid) => {
   return new Promise((resolve, reject) => {
-    request(`https://geoworks.pro:3000/${devid}/stream/start`, (error, resp, body) => {
+    request(`${protocol}${host}/${devid}/stream/start`, (error, resp, body) => {
       if (JSON.parse(body).ok) {
         resolve();
       } else {
@@ -113,7 +117,7 @@ const startStreamOnDev = (devid) => {
 
 const stopStreamOnDev = (devid) => {
   return new Promise((resolve, reject) => {
-    request(`https://geoworks.pro:3000/${devid}/stream/stop`, (error, resp, body) => {
+    request(`${protocol}${host}/${devid}/stream/stop`, (error, resp, body) => {
       if (JSON.parse(body).ok) {
         resolve();
       } else {
