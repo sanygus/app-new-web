@@ -54,7 +54,7 @@ app.get('/stream/start/:devid', (req, res) => {
   res.type('application/json').status(200).send({ ok: true });
 });
 
-/* запрос состояния трансляций по всем указанным устройствам */
+/* запрос состояния трансляций по всем указанным через запятую устройствам */
 app.get('/stream/state/:devsid', (req, res) => {
   const devsid = req.params.devsid.split(',').map((dev) => parseInt(dev));
   res.type('application/json').status(200).send(stream.state(devsid));
