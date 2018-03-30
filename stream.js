@@ -22,20 +22,24 @@ module.exports.start = async (devid) => {
         if (device.up === null) {
           throw new Error('dev state is null');
         }
+        /* включаем устройство, если выключено */
         if (device.up === false) {
           state[devid] = 1;//sleeping
           await wake(devid);//39s+30s+25s=94s
         }
         state[devid] = 2;//waked
 
+        /* делаем фото перед включением видео */
         console.log('waked, try get photo');
         await getPhoto(devid);//7s
         state[devid] = 3;//cam working, photo
 
+        /* запускаем трансляцию на устройстве */
         console.log('photo ok, starting stream');
         await startStreamOnDev(devid);//0.1s
         state[devid] = 4;//dev stream started
 
+        /* запускаем кодирование трансляции в dash */
         console.log('ok, start converter');
         await dashConv.start(devid);//3s
         state[devid] = 5;//conv started
