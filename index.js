@@ -25,7 +25,7 @@ app.get('/bf7d10e21165.html', function(req, res) {
   res.sendFile(__dirname + '/bf7d10e21165.html');
 });
 
-
+/* получение значений датчиков и файлов по определённому устройству */
 app.get('/getdata/:devid', (req, res) => {
   const devid = parseInt(req.params.devid);
   async.parallel(
@@ -47,23 +47,27 @@ app.get('/getdata/:devid', (req, res) => {
   );
 });
 
+/* запрос на включение трансляции на определённом устройстве */
 app.get('/stream/start/:devid', (req, res) => {
   const devid = parseInt(req.params.devid);
   stream.start(devid);
   res.type('application/json').status(200).send({ ok: true });
 });
 
+/* запрос состояния трансляций по всем указанным устройствам */
 app.get('/stream/state/:devsid', (req, res) => {
   const devsid = req.params.devsid.split(',').map((dev) => parseInt(dev));
   res.type('application/json').status(200).send(stream.state(devsid));
 });
 
+/* запрос на выключение трансляции на определённом устройстве */
 app.get('/stream/stop/:devid', (req, res) => {
   const devid = parseInt(req.params.devid);
   stream.stop(devid);
   res.type('application/json').status(200).send({ ok: true });
 });
 
+/* отдаём модифицированный на лету manifest */
 app.get('/static/stream/:devid/manifest.mpd', (req, res) => {
   res.setHeader('Content-Type', 'application/xml');
   mpdConverter(`static/stream/${req.params.devid}/manifest.mpd`, (err, data) => {
